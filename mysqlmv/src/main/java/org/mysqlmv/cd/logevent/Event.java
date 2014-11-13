@@ -5,6 +5,16 @@ import java.io.Serializable;
 /**
  * Created by Kelvin Li on 11/13/2014 10:47 AM.
  */
+
+/**
+ * All events have a common general structure consisting of an event header followed by event data:
+
+ +===================+
+ | event header      |
+ +===================+
+ | event data        |
+ +===================+
+ */
 public class Event implements Serializable {
     private EventHeader header;
     private EventData data;

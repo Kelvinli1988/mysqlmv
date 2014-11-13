@@ -1,6 +1,6 @@
 package org.mysqlmv.cd.logevent;
 
-import org.mysqlmv.cd.logevent.impl.header.EventVersion;
+import org.mysqlmv.cd.logevent.eventdef.header.EventVersion;
 
 import java.io.Serializable;
 
