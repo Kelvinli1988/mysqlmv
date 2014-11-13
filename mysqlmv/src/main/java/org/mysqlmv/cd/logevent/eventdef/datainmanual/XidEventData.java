@@ -31,6 +31,8 @@ public class XidEventData implements EventData {
      */
     /**
      * 8 bytes. The XID transaction number.
+     *
+     * Note: Contrary to all other numeric fields, the XID transaction number is not always written in little-endian format. The bytes are copied unmodified from memory to disk, so the format is machine-dependent. Hence, when replicating from a little-endian to a big-endian machine (or vice versa), the numeric value of transaction numbers will differ. In particular, the output of mysqlbinlog differs. This should does not cause inconsistencies in replication because the only important property of transaction numbers is that different transactions have different numbers (relative order does not matter).
      */
     private long transactionXid;
 
