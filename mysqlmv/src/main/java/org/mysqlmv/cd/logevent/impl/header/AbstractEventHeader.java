@@ -1,7 +1,7 @@
 package org.mysqlmv.cd.logevent.impl.header;
 
 import org.mysqlmv.cd.logevent.EventHeader;
-import org.mysqlmv.cd.logevent.impl.data.LogEventType;
+import org.mysqlmv.cd.logevent.LogEventType;
 
 /**
  * Created by Kelvin Li on 11/13/2014 10:25 AM.

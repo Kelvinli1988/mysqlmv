@@ -1,4 +1,4 @@
-package org.mysqlmv.cd.logevent.impl.data;
+package org.mysqlmv.cd.logevent;
 
 /**
  * Created by Kelvin Li on 11/13/2014.
