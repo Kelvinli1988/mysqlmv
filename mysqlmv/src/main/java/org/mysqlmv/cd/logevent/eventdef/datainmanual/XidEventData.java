@@ -34,13 +34,18 @@ public class XidEventData implements EventData {
      *
      * Note: Contrary to all other numeric fields, the XID transaction number is not always written in little-endian format. The bytes are copied unmodified from memory to disk, so the format is machine-dependent. Hence, when replicating from a little-endian to a big-endian machine (or vice versa), the numeric value of transaction numbers will differ. In particular, the output of mysqlbinlog differs. This should does not cause inconsistencies in replication because the only important property of transaction numbers is that different transactions have different numbers (relative order does not matter).
      */
-    private long transactionXid;
+    private long xid;
 
-    public long getTransactionXid() {
-        return transactionXid;
+    public long getXid() {
+        return xid;
     }
 
-    public void setTransactionXid(long transactionXid) {
-        this.transactionXid = transactionXid;
+    public void setXid(long xid) {
+        this.xid = xid;
+    }
+
+    @Override
+    public String toString() {
+        return "{xid = " + xid + "}";
     }
 }
