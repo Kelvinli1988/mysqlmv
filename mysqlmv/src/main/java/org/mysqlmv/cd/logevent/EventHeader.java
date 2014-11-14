@@ -11,8 +11,8 @@ public interface EventHeader extends Serializable {
     long getTimestamp();
     LogEventType getEventType();
     long getServerId();
-    long getHeaderLength();
-    long getDataLength();
+    int getHeaderLength();
+    int getDataLength();
     long getNextPosition();
     int getFlag();
     byte[] getExtraHeader();

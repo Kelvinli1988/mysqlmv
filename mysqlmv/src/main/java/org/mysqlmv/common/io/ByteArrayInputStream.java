@@ -70,6 +70,17 @@ public class ByteArrayInputStream extends InputStream {
         return sbuilder.toString();
     }
 
+    public String readZeroTerminatedString(int length) throws IOException {
+        byte[] buf = new byte[length];
+        this.inputStream.read(buf);
+        StringBuilder sbuilder = new StringBuilder();
+        for(int i=0; i<length && (buf[i] != 0);i++) {
+//        for (int b; (b = this.read()) != 0; ) {
+            sbuilder.append((char)buf[i]);
+        }
+        return sbuilder.toString();
+    }
+
     /**
      * Alias for read(result, 0, length).
      */

@@ -15,10 +15,10 @@ public class EventHeaderV4Parser implements EventHeaderParser<EventHeaderV4> {
     @Override
     public EventHeaderV4 parse(ByteArrayInputStream input) throws IOException {
         EventHeaderV4 header = new EventHeaderV4();
-        header.setTimestamp(input.readLong(4) * 1000L);
+        header.setTimestamp(input.readLong(4));
         header.setEventType(getEventType(input.readInteger(1)));
         header.setServerId(input.readLong(4));
-        header.setEventLength(input.readLong(4));
+        header.setEventLength(input.readInteger(4));
         header.setNextPosition(input.readLong(4));
         header.setFlag(input.readInteger(2));
         return header;

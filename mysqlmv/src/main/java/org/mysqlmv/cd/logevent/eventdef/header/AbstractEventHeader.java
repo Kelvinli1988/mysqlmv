@@ -28,7 +28,7 @@ public abstract class AbstractEventHeader implements EventHeader {
      * Most events are less than 1000 bytes, except when using LOAD DATA INFILE (where events
      * contain the loaded file, so they can be big).
      */
-    private long eventLength;
+    private int eventLength;
     // v3 (MySQL 4.0.2-4.1)
     private long nextPosition;
     /**
@@ -68,11 +68,11 @@ public abstract class AbstractEventHeader implements EventHeader {
         this.serverId = serverId;
     }
 
-    public long getEventLength() {
+    public int getEventLength() {
         return eventLength;
     }
 
-    public void setEventLength(long eventLength) {
+    public void setEventLength(int eventLength) {
         this.eventLength = eventLength;
     }
 
@@ -105,12 +105,12 @@ public abstract class AbstractEventHeader implements EventHeader {
     }
 
     @Override
-    public long getHeaderLength() {
+    public int getHeaderLength() {
         return 19;
     }
 
     @Override
-    public long getDataLength() {
+    public int getDataLength() {
         return getEventLength() - getHeaderLength();
     }
 }

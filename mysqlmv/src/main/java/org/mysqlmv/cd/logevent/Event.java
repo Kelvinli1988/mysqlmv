@@ -1,5 +1,7 @@
 package org.mysqlmv.cd.logevent;
 
+import org.mysqlmv.cd.logevent.eventdef.datainmanual.BinaryEventData;
+
 import java.io.Serializable;
 
 /**
@@ -16,8 +18,12 @@ import java.io.Serializable;
  +===================+
  */
 public class Event implements Serializable {
+
     private EventHeader header;
     private EventData data;
+
+    public Event() {
+    }
 
     public Event(EventHeader header, EventData data) {
         this.header = header;
@@ -28,8 +34,12 @@ public class Event implements Serializable {
         return (T) header;
     }
 
-    public <T extends EventData> T getData() {
-        return (T) data;
+    public <V extends EventData> V getData() {
+        return (V) data;
+    }
+
+    public boolean isRawData() {
+        return data instanceof BinaryEventData;
     }
 
     @Override

@@ -44,4 +44,45 @@ public class FormatDescriptionEventData implements EventData {
     +=========================+
      */
     // Empty
+
+
+    public int getLogVersion() {
+        return logVersion;
+    }
+
+    public void setLogVersion(int logVersion) {
+        this.logVersion = logVersion;
+    }
+
+    public String getServerVersion() {
+        return serverVersion;
+    }
+
+    public void setServerVersion(String serverVersion) {
+        this.serverVersion = serverVersion;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public int getHeaderLength() {
+        return headerLength;
+    }
+
+    public void setHeaderLength(int headerLength) {
+        this.headerLength = headerLength;
+    }
+
+    public byte[] getPostHeaderLength() {
+        return postHeaderLength;
+    }
+
+    public void setPostHeaderLength(byte[] postHeaderLength) {
+        this.postHeaderLength = postHeaderLength;
+    }
 }
