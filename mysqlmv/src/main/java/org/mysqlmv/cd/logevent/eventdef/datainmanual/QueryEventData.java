@@ -1,11 +1,13 @@
 package org.mysqlmv.cd.logevent.eventdef.datainmanual;
 
+import org.mysqlmv.cd.logevent.EventData;
+
 import java.util.Map;
 
 /**
  * Created by Kelvin Li on 11/13/2014 2:15 PM.
  */
-public class QueryEventData {
+public class QueryEventData implements EventData {
     /*
     +=========================+
     |  Fixed data part        |

@@ -65,7 +65,7 @@ public class ByteArrayInputStream extends InputStream {
         StringBuilder sbuilder = new StringBuilder();
 
         for (int b; (b = this.read()) != 0; ) {
-            sbuilder.append(b);
+            sbuilder.append((char)b);
         }
         return sbuilder.toString();
     }
