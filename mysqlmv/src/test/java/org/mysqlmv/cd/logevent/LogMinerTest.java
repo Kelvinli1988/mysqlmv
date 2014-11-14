@@ -1,6 +1,5 @@
 package org.mysqlmv.cd.logevent;
 
-import junit.framework.Assert;
 import org.mysqlmv.cd.logevent.eventdef.header.EventVersion;
 import org.mysqlmv.cd.logevent.parser.EventMiner;
 import org.testng.annotations.BeforeClass;
