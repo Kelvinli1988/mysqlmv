@@ -2,3 +2,4 @@
 mysqlmv/.idea/
 *.iml
 *.class
+mysqlmv/target/
