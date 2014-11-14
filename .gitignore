@@ -1,3 +1,4 @@
 # Windows image file caches
 mysqlmv/.idea/
 *.iml
+*.class
