@@ -20,7 +20,7 @@ public class LoadEventData {
      */
     private long timestamp;
     /**
-     *  1byte. The length of the name of the table to load.
+     * 1byte. The length of the name of the table to load.
      */
     private int lenOfTable2Load;
     /**
@@ -54,29 +54,29 @@ public class LoadEventData {
      */
     private byte escapor;
     /**
-     *  Flags that indicate whether certain keywords are present in the statement:
-
-     DUMPFILE_FLAG =0x1 (unused; this flag appears to be a botch because it would apply to SELECT ... INTO OUTFILE, not LOAD DATA INFILE)
-
-     OPT_ENCLOSED_FLAG = 0x2 (FIELD OPTIONALLY ENCLOSED BY option)
-
-     REPLACE_FLAG = 0x4 (LOAD DATA INFILE REPLACE)
-
-     IGNORE_FLAG = 0x8 (LOAD DATA INFILE IGNORE)
+     * Flags that indicate whether certain keywords are present in the statement:
+     * <p/>
+     * DUMPFILE_FLAG =0x1 (unused; this flag appears to be a botch because it would apply to SELECT ... INTO OUTFILE, not LOAD DATA INFILE)
+     * <p/>
+     * OPT_ENCLOSED_FLAG = 0x2 (FIELD OPTIONALLY ENCLOSED BY option)
+     * <p/>
+     * REPLACE_FLAG = 0x4 (LOAD DATA INFILE REPLACE)
+     * <p/>
+     * IGNORE_FLAG = 0x8 (LOAD DATA INFILE IGNORE)
      */
     private byte keyWordsIndicator;
     /**
      * 1 byte. Flags that indicate whether each of the field and line options are empty. The low-order five bits are 1 to indicate an empty option (has a length of 0) or 0 to indicate a non-empty option (has a length of 1).
-
-     FIELD_TERM_EMPTY = 0x1
-
-     ENCLOSED_EMPTY = 0x2
-
-     LINE_TERM_EMPTY = 0x4
-
-     LINE_START_EMPTY = 0x8
-
-     ESCAPED_EMPTY = 0x10
+     * <p/>
+     * FIELD_TERM_EMPTY = 0x1
+     * <p/>
+     * ENCLOSED_EMPTY = 0x2
+     * <p/>
+     * LINE_TERM_EMPTY = 0x4
+     * <p/>
+     * LINE_START_EMPTY = 0x8
+     * <p/>
+     * ESCAPED_EMPTY = 0x10
      */
     private byte fieldAndLineOptionIndicator;
     /**

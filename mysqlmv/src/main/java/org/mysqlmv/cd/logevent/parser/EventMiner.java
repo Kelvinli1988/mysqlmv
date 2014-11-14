@@ -50,6 +50,7 @@ public class EventMiner {
 
     /**
      * Switch log file.
+     *
      * @param newFile
      * @param startPoint
      * @return
@@ -58,7 +59,7 @@ public class EventMiner {
     public static boolean switchFile(BinLogFile newFile, long startPoint) throws IOException {
         logger.info("Switch binary log file now, from " + currentFileName + " to " + newFile.getBinlogFile());
         logger.info("Previous end point is " + currentFileName);
-        if(logFileStream != null && currentFileName != null) {
+        if (logFileStream != null && currentFileName != null) {
             try {
                 logFileStream.close();
                 streamClosed = true;
@@ -69,7 +70,7 @@ public class EventMiner {
             }
         }
 
-        try{
+        try {
             logFileStream = newFile.getInputStream();
             streamClosed = false;
             logFileStream.skip(4L);// skip the magic header;
@@ -84,7 +85,7 @@ public class EventMiner {
     }
 
     public static Event nextEvent() throws IOException {
-        if(streamClosed) {
+        if (streamClosed) {
             logFileStream = new FileInputStream(currentFileName);
             logFileStream.skip(lastPointer);
         }
@@ -99,14 +100,14 @@ public class EventMiner {
         header.getDataLength();
         byte[] eventData = new byte[header.getDataLength()];
         int byteRed = logFileStream.read(eventData);
-        if(byteRed < eventData.length) {
+        if (byteRed < eventData.length) {
             logger.info("Current event was not fully recorded.");
-            logger.info("Current log start point: " + lastPointer );
+            logger.info("Current log start point: " + lastPointer);
             try {
                 logFileStream.close();
                 streamClosed = true;
                 logger.info("Binary log stream closed.");
-            } catch(IOException e) {
+            } catch (IOException e) {
                 logger.warning("Fail to close current file stream, file name:" + currentFileName);
                 throw e;
             }

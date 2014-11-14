@@ -16,45 +16,43 @@ import java.util.List;
 
 
 /**
- *
- Write_rows_log_event/WRITE_ROWS_EVENT
-
- Used for row-based binary logging beginning with MySQL 5.1.18.
-
- [TODO: following needs verification; it's guesswork]
-
- Fixed data part:
-
- 6 bytes. The table ID.
-
- 2 bytes. Reserved for future use.
-
- Variable data part:
-
- Packed integer. The number of columns in the table.
-
- Variable-sized. Bit-field indicating whether each column is used, one bit per column. For this field, the amount of storage required for N columns is INT((N+7)/8) bytes.
-
- Variable-sized (for UPDATE_ROWS_LOG_EVENT only). Bit-field indicating whether each column is used in the UPDATE_ROWS_LOG_EVENT after-image; one bit per column. For this field, the amount of storage required for N columns is INT((N+7)/8) bytes.
-
- Variable-sized. A sequence of zero or more rows. The end is determined by the size of the event. Each row has the following format:
-
- Variable-sized. Bit-field indicating whether each field in the row is NULL. Only columns that are "used" according to the second field in the variable data part are listed here. If the second field in the variable data part has N one-bits, the amount of storage required for this field is INT((N+7)/8) bytes.
-
- Variable-sized. The row-image, containing values of all table fields. This only lists table fields that are used (according to the second field of the variable data part) and non-NULL (according to the previous field). In other words, the number of values listed here is equal to the number of zero bits in the previous field (not counting padding bits in the last byte).
-
- The format of each value is described in the log_event_print_value() function in log_event.cc.
-
- (for UPDATE_ROWS_EVENT only) the previous two fields are repeated, representing a second table row.
-
- For each row, the following is done:
-
- For WRITE_ROWS_LOG_EVENT, the row described by the row-image is inserted.
-
- For DELETE_ROWS_LOG_EVENT, a row matching the given row-image is deleted.
-
- For UPDATE_ROWS_LOG_EVENT, a row matching the first row-image is removed, and the row described by the second row-image is inserted.
-
+ * Write_rows_log_event/WRITE_ROWS_EVENT
+ * <p/>
+ * Used for row-based binary logging beginning with MySQL 5.1.18.
+ * <p/>
+ * [TODO: following needs verification; it's guesswork]
+ * <p/>
+ * Fixed data part:
+ * <p/>
+ * 6 bytes. The table ID.
+ * <p/>
+ * 2 bytes. Reserved for future use.
+ * <p/>
+ * Variable data part:
+ * <p/>
+ * Packed integer. The number of columns in the table.
+ * <p/>
+ * Variable-sized. Bit-field indicating whether each column is used, one bit per column. For this field, the amount of storage required for N columns is INT((N+7)/8) bytes.
+ * <p/>
+ * Variable-sized (for UPDATE_ROWS_LOG_EVENT only). Bit-field indicating whether each column is used in the UPDATE_ROWS_LOG_EVENT after-image; one bit per column. For this field, the amount of storage required for N columns is INT((N+7)/8) bytes.
+ * <p/>
+ * Variable-sized. A sequence of zero or more rows. The end is determined by the size of the event. Each row has the following format:
+ * <p/>
+ * Variable-sized. Bit-field indicating whether each field in the row is NULL. Only columns that are "used" according to the second field in the variable data part are listed here. If the second field in the variable data part has N one-bits, the amount of storage required for this field is INT((N+7)/8) bytes.
+ * <p/>
+ * Variable-sized. The row-image, containing values of all table fields. This only lists table fields that are used (according to the second field of the variable data part) and non-NULL (according to the previous field). In other words, the number of values listed here is equal to the number of zero bits in the previous field (not counting padding bits in the last byte).
+ * <p/>
+ * The format of each value is described in the log_event_print_value() function in log_event.cc.
+ * <p/>
+ * (for UPDATE_ROWS_EVENT only) the previous two fields are repeated, representing a second table row.
+ * <p/>
+ * For each row, the following is done:
+ * <p/>
+ * For WRITE_ROWS_LOG_EVENT, the row described by the row-image is inserted.
+ * <p/>
+ * For DELETE_ROWS_LOG_EVENT, a row matching the given row-image is deleted.
+ * <p/>
+ * For UPDATE_ROWS_LOG_EVENT, a row matching the first row-image is removed, and the row described by the second row-image is inserted.
  */
 public class UpdateEventData implements EventData {
     /*

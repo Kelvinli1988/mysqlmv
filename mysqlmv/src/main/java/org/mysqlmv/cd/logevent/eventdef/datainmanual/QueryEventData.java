@@ -93,8 +93,8 @@ public class QueryEventData implements EventData {
          */
         Q_AUTO_INCREMENT(4),
         /**
-         *  Value is three 2-byte unsigned integers representing the character_set_client, collation_connection,
-         *  and collation_server system variables.
+         * Value is three 2-byte unsigned integers representing the character_set_client, collation_connection,
+         * and collation_server system variables.
          */
         Q_CHARSET_CODE(6),
         /**
@@ -117,13 +117,13 @@ public class QueryEventData implements EventData {
          */
         Q_CHARSET_DATABASE_CODE(2),
         /**
-         *  Value is 8 bytes representing the table map to be updated by a multiple-table update statement.
-         *  Each bit of this variable represents a table, and is set to 1 if the corresponding table is
-         *  to be updated by the statement.
-         *  Table_map_for_update is used to evaluate the filter rules specified by --replicate-do-table / --replicate-ignore-table.
+         * Value is 8 bytes representing the table map to be updated by a multiple-table update statement.
+         * Each bit of this variable represents a table, and is set to 1 if the corresponding table is
+         * to be updated by the statement.
+         * Table_map_for_update is used to evaluate the filter rules specified by --replicate-do-table / --replicate-ignore-table.
          */
-        Q_TABLE_MAP_FOR_UPDATE_CODE(9)
-        ;
+        Q_TABLE_MAP_FOR_UPDATE_CODE(9);
+
         private QueryVariableType(int varLen) {
             QueryVariableType.this.length = varLen;
         }

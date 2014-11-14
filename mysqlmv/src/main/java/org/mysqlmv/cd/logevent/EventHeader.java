@@ -9,12 +9,20 @@ import java.io.Serializable;
  */
 public interface EventHeader extends Serializable {
     long getTimestamp();
+
     LogEventType getEventType();
+
     long getServerId();
+
     int getHeaderLength();
+
     int getDataLength();
+
     long getNextPosition();
+
     int getFlag();
+
     byte[] getExtraHeader();
+
     EventVersion getVersion();
 }

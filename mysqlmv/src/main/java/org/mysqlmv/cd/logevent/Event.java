@@ -10,12 +10,12 @@ import java.io.Serializable;
 
 /**
  * All events have a common general structure consisting of an event header followed by event data:
-
- +===================+
- | event header      |
- +===================+
- | event data        |
- +===================+
+ * <p/>
+ * +===================+
+ * | event header      |
+ * +===================+
+ * | event data        |
+ * +===================+
  */
 public class Event implements Serializable {
 

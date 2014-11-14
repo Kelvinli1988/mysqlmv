@@ -8,8 +8,8 @@ import org.mysqlmv.cd.logevent.EventData;
 
 /**
  * This event occurs at the beginning of v4 binary log files. See Binary Log Versions for how it is used.
-
- In MySQL 5.0 and up, all binary log files start with a FORMAT_DESCRIPTION_EVENT, but there will be a way to distinguish between a FORMAT_DESCRIPTION_EVENT created at mysqld startup and other FORMAT_DESCRIPTION_EVENT instances; such a distinction is needed because the first category of FORMAT_DESCRIPTION_EVENT (which means the master has started) should trigger some cleaning tasks on the slave. (Suppose the master died brutally and restarted: the slave must delete old replicated temporary tables.)
+ * <p/>
+ * In MySQL 5.0 and up, all binary log files start with a FORMAT_DESCRIPTION_EVENT, but there will be a way to distinguish between a FORMAT_DESCRIPTION_EVENT created at mysqld startup and other FORMAT_DESCRIPTION_EVENT instances; such a distinction is needed because the first category of FORMAT_DESCRIPTION_EVENT (which means the master has started) should trigger some cleaning tasks on the slave. (Suppose the master died brutally and restarted: the slave must delete old replicated temporary tables.)
  */
 public class FormatDescriptionEventData implements EventData {
     /*

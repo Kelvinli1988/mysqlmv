@@ -8,6 +8,6 @@ import java.io.IOException;
 /**
  * Created by Kelvin Li on 11/13/2014 10:54 AM.
  */
-public interface EventDataParser <T extends EventData> {
+public interface EventDataParser<T extends EventData> {
     T parse(ByteArrayInputStream stream) throws IOException;
 }

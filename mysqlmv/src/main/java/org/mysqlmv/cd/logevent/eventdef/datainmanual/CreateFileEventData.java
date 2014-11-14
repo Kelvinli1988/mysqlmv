@@ -8,7 +8,7 @@ import org.mysqlmv.cd.logevent.EventData;
 
 /**
  * This event is used for LOAD DATA INFILE statements. See also LOAD DATA INFILE Events.
- *
+ * <p/>
  * This event tells the slave to create a temporary file and fill it with a first data block.
  * Later, zero or more APPEND_BLOCK_EVENT events append blocks to this temporary file.
  * EXEC_LOAD_EVENT tells the slave to load the temporary file into the table, or DELETE_FILE_EVENT
@@ -16,7 +16,7 @@ import org.mysqlmv.cd.logevent.EventData;
  * when the LOAD DATA failed on the master: On the master we start to write loaded blocks to the
  * binary log before the end of the statement. If for some reason there is an error, we must tell
  * the slave to abort the load.
- *
+ * <p/>
  * The format for this event is more complicated than for others, because it contains information
  * about many LOAD DATA INFILE statement clauses.
  */
@@ -104,14 +104,14 @@ public class CreateFileEventData implements EventData {
     private String escapor;
     /**
      * 1 byte. Flags that indicate whether certain keywords are present in the statement:
-
-     DUMPFILE_FLAG =0x1 (unused; this flag appears to be a botch because it would apply to SELECT ... INTO OUTFILE, not LOAD DATA INFILE)
-
-     OPT_ENCLOSED_FLAG = 0x2 (FIELD OPTIONALLY ENCLOSED BY option)
-
-     REPLACE_FLAG = 0x4 (LOAD DATA INFILE REPLACE)
-
-     IGNORE_FLAG = 0x8 (LOAD DATA INFILE IGNORE)
+     * <p/>
+     * DUMPFILE_FLAG =0x1 (unused; this flag appears to be a botch because it would apply to SELECT ... INTO OUTFILE, not LOAD DATA INFILE)
+     * <p/>
+     * OPT_ENCLOSED_FLAG = 0x2 (FIELD OPTIONALLY ENCLOSED BY option)
+     * <p/>
+     * REPLACE_FLAG = 0x4 (LOAD DATA INFILE REPLACE)
+     * <p/>
+     * IGNORE_FLAG = 0x8 (LOAD DATA INFILE IGNORE)
      */
     private byte keyWordsIndicator;
     /**

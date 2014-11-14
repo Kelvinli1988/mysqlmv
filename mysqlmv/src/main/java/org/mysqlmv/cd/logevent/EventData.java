@@ -8,11 +8,11 @@ import java.io.Serializable;
 
 /**
  * Event data structure
- +=====================================+
- | event  | fixed part                 |
- | data   +----------------------------+
- |        | variable part              |
- +=====================================+
+ * +=====================================+
+ * | event  | fixed part                 |
+ * | data   +----------------------------+
+ * |        | variable part              |
+ * +=====================================+
  */
 public interface EventData extends Serializable {
     /*

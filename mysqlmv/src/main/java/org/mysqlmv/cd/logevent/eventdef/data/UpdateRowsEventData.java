@@ -63,7 +63,7 @@ public class UpdateRowsEventData implements EventData {
             sb.append("\n    ").
                     append("{before=").append(Arrays.toString(row.getKey())).
                     append(", after=").append(Arrays.toString(row.getValue())).
-               append("},");
+                    append("},");
         }
         if (!rows.isEmpty()) {
             sb.replace(sb.length() - 1, sb.length(), "\n");
