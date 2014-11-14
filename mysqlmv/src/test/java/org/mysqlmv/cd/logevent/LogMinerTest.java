@@ -17,12 +17,19 @@ public class LogMinerTest {
     public void switchFile() throws IOException {
         BinLogFile logFile = new BinLogFile("src/test/resources/PVGN50874064A-bin.000001");
         EventMiner.switchFile(logFile, 4L);
+        long start = System.currentTimeMillis();
+        for(int i=0; i<16010 ; i++) {
+            Event ee = EventMiner.nextEvent();
+//            System.out.println(i);
+            if(!RecognizedEventType.isRecognized(ee.getHeader().getEventType())) {
+                System.out.println(i);
+                break;
+            }
+        }
+        System.out.println(System.currentTimeMillis() - start);
     }
 
     @Test
     public void testNextEvent() throws IOException {
-        Event ee = EventMiner.nextEvent();
-        EventHeader header = ee.getHeader();
-        Assert.assertEquals(header.getVersion(), EventVersion.V_4);
     }
 }
