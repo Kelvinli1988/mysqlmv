@@ -36,7 +36,7 @@ public class EventHeaderV1 extends AbstractEventHeader {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("EventHeaderV4");
+        sb.append("EventHeaderV1");
         sb.append("{timestamp=").append(getTimestamp());
         sb.append(", eventType=").append(getEventType().toString());
         sb.append(", serverId=").append(getServerId());
