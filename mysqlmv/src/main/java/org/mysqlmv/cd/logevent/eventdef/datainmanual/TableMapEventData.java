@@ -53,7 +53,7 @@ public class TableMapEventData implements EventData {
     /**
      * Variable-sized. An array of column types, one byte per column.
      */
-    private Object[] columnTypeArray;
+    private byte[] columnTypeArray;
     /**
      *     Packed integer. The length of the metadata block.
      */
@@ -61,7 +61,7 @@ public class TableMapEventData implements EventData {
     /**
      * Variable-sized. The metadata block; see log_event.h for contents and format.
      */
-    private BitSet metadata;
+    private int[] metadata;
     /**
      * Variable-sized. Bit-field indicating whether each column can be NULL, one bit per column. For this field, the amount of storage required for N columns is INT((N+7)/8) bytes.
      */
@@ -115,11 +115,11 @@ public class TableMapEventData implements EventData {
         this.columnNum = columnNum;
     }
 
-    public Object[] getColumnTypeArray() {
+    public byte[] getColumnTypeArray() {
         return columnTypeArray;
     }
 
-    public void setColumnTypeArray(Object[] columnTypeArray) {
+    public void setColumnTypeArray(byte[] columnTypeArray) {
         this.columnTypeArray = columnTypeArray;
     }
 
@@ -131,13 +131,6 @@ public class TableMapEventData implements EventData {
         this.metaDataLength = metaDataLength;
     }
 
-    public BitSet getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(BitSet metadata) {
-        this.metadata = metadata;
-    }
 
     public BitSet getColumnNullable() {
         return columnNullable;
@@ -145,5 +138,13 @@ public class TableMapEventData implements EventData {
 
     public void setColumnNullable(BitSet columnNullable) {
         this.columnNullable = columnNullable;
+    }
+
+    public int[] getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(int[] metadata) {
+        this.metadata = metadata;
     }
 }
