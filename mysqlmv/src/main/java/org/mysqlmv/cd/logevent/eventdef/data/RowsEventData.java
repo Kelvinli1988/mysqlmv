@@ -4,6 +4,7 @@ import org.mysqlmv.cd.logevent.EventData;
 
 import java.io.Serializable;
 import java.util.BitSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -55,6 +56,7 @@ import java.util.List;
  * For UPDATE_ROWS_LOG_EVENT, a row matching the first row-image is removed, and the row described by the second row-image is inserted.
  */
 public class RowsEventData implements EventData {
+
     /*
     +=========================+
     |  Fixed data part        |
@@ -68,14 +70,14 @@ public class RowsEventData implements EventData {
      * 2 bytes. Reserved for future use.
      */
     private int toUse;
-    /**
-     * 2 bytes
-     */
-    private int extraInfoLength;
-    /**
-     *
-     */
-    private byte[] extraInfo;
+//    /**
+//     * 2 bytes
+//     */
+//    private int extraInfoLength;
+//    /**
+//     *
+//     */
+//    private byte[] extraInfo;
     /*
     +=========================+
     |  Variable data part     |
@@ -84,7 +86,7 @@ public class RowsEventData implements EventData {
     /**
      * Packed integer. The number of columns in the table.
      */
-    private int packedInteger;
+    private int columnNum;
 
     /**
      * Variable-sized. Bit-field indicating whether each column is used, one bit per column.
@@ -116,28 +118,12 @@ public class RowsEventData implements EventData {
         this.toUse = toUse;
     }
 
-    public int getExtraInfoLength() {
-        return extraInfoLength;
+    public int getColumnNum() {
+        return columnNum;
     }
 
-    public void setExtraInfoLength(int extraInfoLength) {
-        this.extraInfoLength = extraInfoLength;
-    }
-
-    public byte[] getExtraInfo() {
-        return extraInfo;
-    }
-
-    public void setExtraInfo(byte[] extraInfo) {
-        this.extraInfo = extraInfo;
-    }
-
-    public int getPackedInteger() {
-        return packedInteger;
-    }
-
-    public void setPackedInteger(int packedInteger) {
-        this.packedInteger = packedInteger;
+    public void setColumnNum(int columnNum) {
+        this.columnNum = columnNum;
     }
 
     public BitSet getColumnUsageBeforeUpdate() {
@@ -164,7 +150,13 @@ public class RowsEventData implements EventData {
         this.rows = rows;
     }
 
-    private class Row implements Serializable {
+    public RowsEventData() {
+        this.rows = new LinkedList<Row>();
+    }
+
+    public static class Row implements Serializable {
+        private List<Cell> cells;
+
         public List<Cell> getCells() {
             return cells;
         }
@@ -173,19 +165,30 @@ public class RowsEventData implements EventData {
             this.cells = cells;
         }
 
-        private List<Cell> cells;
+        public Row() {
+            cells = new LinkedList<Cell>();
+        }
     }
 
-    private class Cell<T> implements Serializable {
-        ColumnType type;
-        private T value;
+    public static class Cell implements Serializable {
+        private ColumnType columnType;
 
-        public T getValue() {
+        private Serializable value;
+
+        public Serializable getValue() {
             return value;
         }
 
-        public void setValue(T value) {
+        public void setValue(Serializable value) {
             this.value = value;
+        }
+
+        public ColumnType getColumnType() {
+            return columnType;
+        }
+
+        public void setColumnType(ColumnType columnType) {
+            this.columnType = columnType;
         }
     }
 }
