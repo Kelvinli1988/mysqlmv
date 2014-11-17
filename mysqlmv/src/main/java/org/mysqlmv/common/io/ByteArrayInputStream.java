@@ -96,7 +96,7 @@ public class ByteArrayInputStream extends InputStream {
         bytes = bigEndian ? bytes : reverse(bytes);
         BitSet result = new BitSet();
         for (int i = 0; i < length; i++) {
-            if ((bytes[i >> 3] & (1 << (i % 8))) != 0) {
+            if ((bytes[i >> 3] & (1 << (( 7 - (i % 8))))) != 0) {
                 result.set(i);
             }
         }
