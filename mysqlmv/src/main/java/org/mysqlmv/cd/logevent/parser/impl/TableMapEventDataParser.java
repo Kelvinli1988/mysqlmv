@@ -1,7 +1,7 @@
 package org.mysqlmv.cd.logevent.parser.impl;
 
-import org.mysqlmv.cd.logevent.eventdef.datainmanual.ColumnType;
-import org.mysqlmv.cd.logevent.eventdef.datainmanual.TableMapEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.ColumnType;
+import org.mysqlmv.cd.logevent.eventdef.data.TableMapEventData;
 import org.mysqlmv.cd.logevent.parser.EventDataParser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 

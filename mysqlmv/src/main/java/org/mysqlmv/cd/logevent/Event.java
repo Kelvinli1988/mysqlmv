@@ -1,6 +1,6 @@
 package org.mysqlmv.cd.logevent;
 
-import org.mysqlmv.cd.logevent.eventdef.datainmanual.BinaryEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.BinaryEventData;
 
 import java.io.Serializable;
 

@@ -4,7 +4,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mysqlmv.cd.logevent.BinLogFile;
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.EventHeader;
-import org.mysqlmv.cd.logevent.eventdef.datainmanual.BinaryEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.BinaryEventData;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 
 import java.io.FileInputStream;

@@ -1,6 +1,6 @@
 package org.mysqlmv.cd.logevent.parser.impl;
 
-import org.mysqlmv.cd.logevent.eventdef.datainmanual.XidEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.XidEventData;
 import org.mysqlmv.cd.logevent.parser.EventDataParser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 
