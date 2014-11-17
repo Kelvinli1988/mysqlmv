@@ -5,82 +5,146 @@ import org.mysqlmv.cd.logevent.EventData;
 import java.util.BitSet;
 
 /**
- * Created by Kelvin Li on 11/13/2014 10:34 AM.
+ * Created by Kelvin Li on 11/14/2014 5:38 PM.
+ */
+
+/**
+ *     Used for row-based binary logging beginning with MySQL 5.1.5.
  */
 public class TableMapEventData implements EventData {
+    /*
+    +=========================+
+    |  Fixed data part        |
+    +=========================+
+    */
+    /**
+     * 6 bytes. The table ID.
+     */
+    private long tableID;
+    /**
+     * 2 bytes. Reserved for future use.
+     */
+    /*
+    +=========================+
+    |  Variable data part     |
+    +=========================+
+     */
+    /**
+     * 1 byte. The length of the database name.
+     */
+    private int dbNameLength;
 
-    private long tableId;
-    private String database;
-    private String table;
-    private byte[] columnTypes;
-    private int[] columnMetadata;
-    private BitSet columnNullability;
+    /**
+     * Variable-sized. The database name (null-terminated).
+     */
+    private String dbName;
+    /**
+     *  1 byte. The length of the table name.
+     */
+    private int tableNameLength;
+    /**
+     * Variable-sized. The table name (null-terminated).
+     */
+    private String tableName;
+    /**
+     * Packed integer. The number of columns in the table.
+     */
+    private int columnNum;
+    /**
+     * Variable-sized. An array of column types, one byte per column.
+     */
+    private byte[] columnTypeArray;
+    /**
+     *     Packed integer. The length of the metadata block.
+     */
+    private int metaDataLength;
+    /**
+     * Variable-sized. The metadata block; see log_event.h for contents and format.
+     */
+    private int[] metadata;
+    /**
+     * Variable-sized. Bit-field indicating whether each column can be NULL, one bit per column. For this field, the amount of storage required for N columns is INT((N+7)/8) bytes.
+     */
+    private BitSet columnNullable;
 
-    public long getTableId() {
-        return tableId;
+    public long getTableID() {
+        return tableID;
     }
 
-    public void setTableId(long tableId) {
-        this.tableId = tableId;
+    public void setTableID(long tableID) {
+        this.tableID = tableID;
     }
 
-    public String getDatabase() {
-        return database;
+    public int getDbNameLength() {
+        return dbNameLength;
     }
 
-    public void setDatabase(String database) {
-        this.database = database;
+    public void setDbNameLength(int dbNameLength) {
+        this.dbNameLength = dbNameLength;
     }
 
-    public String getTable() {
-        return table;
+    public String getDbName() {
+        return dbName;
     }
 
-    public void setTable(String table) {
-        this.table = table;
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
     }
 
-    public byte[] getColumnTypes() {
-        return columnTypes;
+    public int getTableNameLength() {
+        return tableNameLength;
     }
 
-    public void setColumnTypes(byte[] columnTypes) {
-        this.columnTypes = columnTypes;
+    public void setTableNameLength(int tableNameLength) {
+        this.tableNameLength = tableNameLength;
     }
 
-    public int[] getColumnMetadata() {
-        return columnMetadata;
+    public String getTableName() {
+        return tableName;
     }
 
-    public void setColumnMetadata(int[] columnMetadata) {
-        this.columnMetadata = columnMetadata;
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
-    public BitSet getColumnNullability() {
-        return columnNullability;
+    public int getColumnNum() {
+        return columnNum;
     }
 
-    public void setColumnNullability(BitSet columnNullability) {
-        this.columnNullability = columnNullability;
+    public void setColumnNum(int columnNum) {
+        this.columnNum = columnNum;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("TableMapEventData");
-        sb.append("{tableId=").append(tableId);
-        sb.append(", database='").append(database).append('\'');
-        sb.append(", table='").append(table).append('\'');
-        sb.append(", columnTypes=").append(columnTypes == null ? "null" : "");
-        for (int i = 0; columnTypes != null && i < columnTypes.length; ++i) {
-            sb.append(i == 0 ? "" : ", ").append(columnTypes[i]);
-        }
-        sb.append(", columnMetadata=").append(columnMetadata == null ? "null" : "");
-        for (int i = 0; columnMetadata != null && i < columnMetadata.length; ++i) {
-            sb.append(i == 0 ? "" : ", ").append(columnMetadata[i]);
-        }
-        sb.append(", columnNullability=").append(columnNullability);
-        sb.append('}');
-        return sb.toString();
+    public byte[] getColumnTypeArray() {
+        return columnTypeArray;
+    }
+
+    public void setColumnTypeArray(byte[] columnTypeArray) {
+        this.columnTypeArray = columnTypeArray;
+    }
+
+    public int getMetaDataLength() {
+        return metaDataLength;
+    }
+
+    public void setMetaDataLength(int metaDataLength) {
+        this.metaDataLength = metaDataLength;
+    }
+
+
+    public BitSet getColumnNullable() {
+        return columnNullable;
+    }
+
+    public void setColumnNullable(BitSet columnNullable) {
+        this.columnNullable = columnNullable;
+    }
+
+    public int[] getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(int[] metadata) {
+        this.metadata = metadata;
     }
 }

@@ -3,36 +3,46 @@ package org.mysqlmv.cd.logevent.eventdef.data;
 import org.mysqlmv.cd.logevent.EventData;
 
 /**
- * Created by Kelvin Li on 11/13/2014 10:34 AM.
+ * Created by Kelvin Li on 11/13/2014 2:54 PM.
  */
 public class RotateEventData implements EventData {
+    /*
+    +=========================+
+    |  Fixed data part        |
+    +=========================+
+    */
 
-    private String binlogFilename;
-    private long binlogPosition;
+    /**
+     * The position of the first event in the next log file. Always contains the number 4
+     * (meaning the next event starts at position 4 in the next binary log).
+     * This field is not present in v1; presumably the value is assumed to be 4.
+     */
+    private long posOfNextLog;
 
-    public String getBinlogFilename() {
-        return binlogFilename;
+    /*
+    +=========================+
+    |  Variable data part     |
+    +=========================+
+     */
+    /**
+     * The name of the next binary log. The filename is not null-terminated.
+     * Its length is the event size minus the size of the fixed parts.
+     */
+    private String nameOfNextLog;
+
+    public long getPosOfNextLog() {
+        return posOfNextLog;
     }
 
-    public void setBinlogFilename(String binlogFilename) {
-        this.binlogFilename = binlogFilename;
+    public void setPosOfNextLog(long posOfNextLog) {
+        this.posOfNextLog = posOfNextLog;
     }
 
-    public long getBinlogPosition() {
-        return binlogPosition;
+    public String getNameOfNextLog() {
+        return nameOfNextLog;
     }
 
-    public void setBinlogPosition(long binlogPosition) {
-        this.binlogPosition = binlogPosition;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("RotateEventData");
-        sb.append("{binlogFilename='").append(binlogFilename).append('\'');
-        sb.append(", binlogPosition=").append(binlogPosition);
-        sb.append('}');
-        return sb.toString();
+    public void setNameOfNextLog(String nameOfNextLog) {
+        this.nameOfNextLog = nameOfNextLog;
     }
 }

@@ -13,6 +13,7 @@ public class RecognizedEventType {
         recognized.add(LogEventType.FORMAT_DESCRIPTION);
         recognized.add(LogEventType.QUERY);
         recognized.add(LogEventType.XID);
+        recognized.add(LogEventType.TABLE_MAP);
     }
 
     public static boolean isRecognized(LogEventType type) {

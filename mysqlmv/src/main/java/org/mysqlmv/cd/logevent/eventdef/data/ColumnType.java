@@ -1,4 +1,4 @@
-package org.mysqlmv.cd.logevent.eventdef.datainmanual;
+package org.mysqlmv.cd.logevent.eventdef.data;
 
 import java.util.HashMap;
 import java.util.Map;

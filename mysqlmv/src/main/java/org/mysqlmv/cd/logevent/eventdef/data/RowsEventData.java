@@ -1,4 +1,4 @@
-package org.mysqlmv.cd.logevent.eventdef.datainmanual;
+package org.mysqlmv.cd.logevent.eventdef.data;
 
 import org.mysqlmv.cd.logevent.EventData;
 
@@ -54,7 +54,7 @@ import java.util.List;
  * <p/>
  * For UPDATE_ROWS_LOG_EVENT, a row matching the first row-image is removed, and the row described by the second row-image is inserted.
  */
-public class UpdateEventData implements EventData {
+public class RowsEventData implements EventData {
     /*
     +=========================+
     |  Fixed data part        |
@@ -177,6 +177,7 @@ public class UpdateEventData implements EventData {
     }
 
     private class Cell<T> implements Serializable {
+        ColumnType type;
         private T value;
 
         public T getValue() {
