@@ -25,7 +25,6 @@ public class QueryEventDataParserTest {
         // skip the first event, it is a format description event;
         EventMiner.nextEvent();
         event = EventMiner.nextEvent();
-        event = EventMiner.nextEvent();
     }
 
     @Test
