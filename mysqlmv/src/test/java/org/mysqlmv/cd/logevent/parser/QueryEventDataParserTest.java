@@ -1,6 +1,5 @@
 package org.mysqlmv.cd.logevent.parser;
 
-import org.mysqlmv.cd.logevent.BinLogFile;
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.LogEventType;
 import org.mysqlmv.cd.logevent.eventdef.data.BinaryEventData;
@@ -20,7 +19,6 @@ public class QueryEventDataParserTest {
     Event event;
     @BeforeClass
     public void prepare() throws IOException {
-        BinLogFile logFile = new BinLogFile("src/test/resources/PVGN50874064A-bin.000001");
         EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000001", 4L);
         // skip the first event, it is a format description event;
         EventMiner.getINSTANCE().next();

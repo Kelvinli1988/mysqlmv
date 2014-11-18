@@ -1,8 +1,5 @@
 package org.mysqlmv.cd.logevent.parser;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Level;
-import org.mysqlmv.cd.logevent.BinLogFile;
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.EventHeader;
 import org.mysqlmv.cd.logevent.eventdef.data.BinaryEventData;
@@ -14,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -69,7 +67,7 @@ public class EventMiner implements Iterator<Event> {
      * @return
      * @throws IOException, this exception will be thrown when last file was closed failed or new file failed to open.
      */
-    public boolean switchFile(String newFile, long startPoint) throws IOException {
+    public boolean switchFile(String newFile, long startPoint) {
         logger.info("Switch binary log file now, from " + currentFileName + " to " + newFile);
         logger.info("Previous end point is " + currentFileName);
         if (logFileStream != null && currentFileName != null) {
@@ -80,16 +78,35 @@ public class EventMiner implements Iterator<Event> {
                 logger.warn("Fail to close binary log file : " + currentFileName, e);
             }
         }
+        boolean isValidLogFile = false;
         try {
             logFileStream = new FileInputStream(newFile);
-            streamClosed = false;
-            logFileStream.skip(startPoint);// skip unused bytes, usually it is 4;
+            isValidLogFile = validateLogFile(logFileStream);
+            if(isValidLogFile) {
+                streamClosed = false;
+                logFileStream.skip(startPoint - 4);// skip unused bytes, usually it is 4;
+            } else {
+                logFileStream.close();
+            }
         } catch (FileNotFoundException ex) {
-            logger.warn("Fail to fine new binary log file : " + newFile, ex);
+            logger.error("Fail to find new binary log file : " + newFile, ex);
+        } catch (IOException ex) {
+            logger.error("Fail to access new binary log file: " + newFile, ex);
+        }
+        if(!isValidLogFile) {
+            logger.error("Invalid binary log file, file path:" + newFile);
+            throw new RuntimeException("Invalid binary log file, file path:" + newFile);
         }
         lastPointer = startPoint;
         logger.info("New file start point is " + startPoint);
         return true;
+    }
+
+    private boolean validateLogFile(InputStream input) throws IOException {
+        byte[] MAGIC_HEADER = {(byte) 0xfe, (byte) 0x62, (byte) 0x69, (byte) 0x6e};
+        byte[] magicPart = new byte[MAGIC_HEADER.length];
+        input.read(magicPart);
+        return Arrays.equals(MAGIC_HEADER, magicPart);
     }
 
     private void checkStream() {

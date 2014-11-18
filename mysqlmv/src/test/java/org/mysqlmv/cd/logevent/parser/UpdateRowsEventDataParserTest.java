@@ -1,13 +1,11 @@
 package org.mysqlmv.cd.logevent.parser;
 
-import org.mysqlmv.cd.logevent.BinLogFile;
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.LogEventType;
 import org.mysqlmv.cd.logevent.eventdef.data.*;
 import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
 import org.mysqlmv.cd.logevent.parser.impl.TableMapEventDataParser;
 import org.mysqlmv.cd.logevent.parser.impl.UpdateRowsEventDataParser;
-import org.mysqlmv.cd.logevent.parser.impl.WriteRowsEventDataParser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
