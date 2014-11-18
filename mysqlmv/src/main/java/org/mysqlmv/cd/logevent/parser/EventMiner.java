@@ -80,7 +80,6 @@ public class EventMiner implements Iterator<Event> {
                 logger.warn("Fail to close binary log file : " + currentFileName, e);
             }
         }
-
         try {
             logFileStream = new FileInputStream(newFile);
             streamClosed = false;
@@ -133,12 +132,11 @@ public class EventMiner implements Iterator<Event> {
         try {
             available = logFileStream.available();
         } catch (IOException e) {
-            logger.error("Fail to access log file, log file path: " + currentFileName, e);
-        } finally {
+            logger.error("Fail to access log file and try to close stream, log file path: " + currentFileName, e);
             try {
                 logFileStream.close();
-            } catch (IOException e) {
-                logger.error("Fail to close log file, log file path: " + currentFileName, e);
+            } catch (IOException ex) {
+                logger.error("Fail to close log file, log file path: " + currentFileName, ex);
             }
         }
         if (available <= 0) {
