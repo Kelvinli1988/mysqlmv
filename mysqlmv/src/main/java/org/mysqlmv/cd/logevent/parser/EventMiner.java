@@ -138,13 +138,15 @@ public class EventMiner implements Iterator<Event> {
             throw new RuntimeException(e);
         }
         lastPointer = header.getNextPosition();
-        logger.trace("Current log start point: " + lastPointer);
+        logger.debug("Current log start point: " + lastPointer);
         return new Event(header, new BinaryEventData(eventData));
     }
 
     @Override
     public boolean hasNext() {
-        checkStream();
+        if(streamClosed) {
+            return false;
+        }
         int available = 0;
         try {
             available = logFileStream.available();
@@ -152,6 +154,7 @@ public class EventMiner implements Iterator<Event> {
             logger.error("Fail to access log file and try to close stream, log file path: " + currentFileName, e);
             try {
                 logFileStream.close();
+                streamClosed = true;
             } catch (IOException ex) {
                 logger.error("Fail to close log file, log file path: " + currentFileName, ex);
             }
@@ -159,6 +162,7 @@ public class EventMiner implements Iterator<Event> {
         if (available <= 0) {
             try {
                 logFileStream.close();
+                streamClosed = true;
             } catch (IOException e) {
                 logger.error("Fail to close log file, log file path: " + currentFileName, e);
             }
