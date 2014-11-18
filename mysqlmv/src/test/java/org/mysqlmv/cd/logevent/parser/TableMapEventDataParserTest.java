@@ -20,10 +20,9 @@ public class TableMapEventDataParserTest {
     Event event;
     @BeforeClass
     public void switchFile() throws IOException {
-        BinLogFile logFile = new BinLogFile("src/test/resources/PVGN50874064A-bin.000003");
-        EventMiner.switchFile(logFile, 4L);
+        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000003", 4L);
         for(int i=0; ; i++) {
-            Event ee = EventMiner.nextEvent();
+            Event ee = EventMiner.getINSTANCE().next();
             if(i == 2) {
                 event = ee;
                 break;

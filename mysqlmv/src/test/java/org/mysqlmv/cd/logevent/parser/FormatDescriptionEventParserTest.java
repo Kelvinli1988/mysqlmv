@@ -20,9 +20,8 @@ public class FormatDescriptionEventParserTest {
     private Event event;
     @BeforeClass
     public void prepareEvent() throws IOException {
-        BinLogFile logFile = new BinLogFile("src/test/resources/PVGN50874064A-bin.000001");
-        EventMiner.switchFile(logFile, 4L);
-        event = EventMiner.nextEvent();
+        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000001", 4L);
+        event = EventMiner.getINSTANCE().next();
     }
 
     @Test

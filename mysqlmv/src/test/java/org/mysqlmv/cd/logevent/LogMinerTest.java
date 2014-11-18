@@ -1,6 +1,5 @@
 package org.mysqlmv.cd.logevent;
 
-import org.mysqlmv.cd.logevent.eventdef.header.EventVersion;
 import org.mysqlmv.cd.logevent.parser.EventMiner;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -14,16 +13,17 @@ public class LogMinerTest {
 
     @BeforeClass
     public void switchFile() throws IOException {
-        BinLogFile logFile = new BinLogFile("src/test/resources/PVGN50874064A-bin.000001");
-        EventMiner.switchFile(logFile, 4L);
+        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000006", 4L);
         long start = System.currentTimeMillis();
         for(int i=0; i<16010 ; i++) {
-            Event ee = EventMiner.nextEvent();
-//            System.out.println(i);
-            if(!RecognizedEventType.isRecognized(ee.getHeader().getEventType())) {
-                System.out.println(i);
-                break;
+            if(EventMiner.getINSTANCE().hasNext()) {
+                Event ee = EventMiner.getINSTANCE().next();
+                if(!RecognizedEventType.isRecognized(ee.getHeader().getEventType())) {
+                    System.out.println(i);
+                    break;
+                }
             }
+
         }
         System.out.println(System.currentTimeMillis() - start);
     }

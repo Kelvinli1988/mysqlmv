@@ -20,10 +20,9 @@ public class XidEventDataParserTest {
     Event event;
     @BeforeClass
     public void switchFile() throws IOException {
-        BinLogFile logFile = new BinLogFile("src/test/resources/PVGN50874064A-bin.000001");
-        EventMiner.switchFile(logFile, 4L);
+        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000001", 4L);
         for(int i=0; ; i++) {
-            Event ee = EventMiner.nextEvent();
+            Event ee = EventMiner.getINSTANCE().next();
             if(i == 44) {
                 event = ee;
                 break;

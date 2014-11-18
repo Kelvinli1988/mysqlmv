@@ -21,10 +21,10 @@ public class QueryEventDataParserTest {
     @BeforeClass
     public void prepare() throws IOException {
         BinLogFile logFile = new BinLogFile("src/test/resources/PVGN50874064A-bin.000001");
-        EventMiner.switchFile(logFile, 4L);
+        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000001", 4L);
         // skip the first event, it is a format description event;
-        EventMiner.nextEvent();
-        event = EventMiner.nextEvent();
+        EventMiner.getINSTANCE().next();
+        event = EventMiner.getINSTANCE().next();
     }
 
     @Test
