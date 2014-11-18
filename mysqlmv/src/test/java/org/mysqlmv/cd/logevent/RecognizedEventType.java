@@ -15,6 +15,7 @@ public class RecognizedEventType {
         recognized.add(LogEventType.XID);
         recognized.add(LogEventType.TABLE_MAP);
         recognized.add(LogEventType.WRITE_ROWS);
+        recognized.add(LogEventType.UPDATE_ROWS);
     }
 
     public static boolean isRecognized(LogEventType type) {
