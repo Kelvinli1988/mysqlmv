@@ -1,8 +1,8 @@
-package org.mysqlmv.cd.logevent.parser;
+package org.mysqlmv.cd.logevent;
 
-import org.mysqlmv.cd.logevent.Event;
-import org.mysqlmv.cd.logevent.EventHeader;
 import org.mysqlmv.cd.logevent.eventdef.data.BinaryEventData;
+import org.mysqlmv.cd.logevent.parser.EventHeaderParser;
+import org.mysqlmv.cd.logevent.parser.EventHeaderV4Parser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ import java.util.Iterator;
  * As there will only one bin file which will be written by MYSQL, so this class will be a singleton class.
  * You can call the switchFile function to switch a bin file when bin file is changed.
  */
-public class EventMiner implements Iterator<Event> {
+public class EventMiner implements Iterator<Event>, Switchable {
 
     public static Logger logger = LoggerFactory.getLogger(EventMiner.class);
     /**
@@ -67,6 +67,7 @@ public class EventMiner implements Iterator<Event> {
      * @return
      * @throws IOException, this exception will be thrown when last file was closed failed or new file failed to open.
      */
+    @Override
     public boolean switchFile(String newFile, long startPoint) {
         logger.info("Switch binary log file now, from " + currentFileName + " to " + newFile);
         logger.info("Previous end point is " + currentFileName);
