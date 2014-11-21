@@ -19,11 +19,8 @@ import java.io.Serializable;
  */
 public class Event implements Serializable {
 
-    private EventHeader header;
-    private EventData data;
-
-    public Event() {
-    }
+    private final EventHeader header;
+    private final EventData data;
 
     public Event(EventHeader header, EventData data) {
         this.header = header;
