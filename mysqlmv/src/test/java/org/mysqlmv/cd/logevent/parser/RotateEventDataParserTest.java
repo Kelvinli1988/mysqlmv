@@ -1,12 +1,11 @@
 package org.mysqlmv.cd.logevent.parser;
 
 import org.mysqlmv.cd.logevent.Event;
+import org.mysqlmv.cd.logevent.EventMiner;
 import org.mysqlmv.cd.logevent.LogEventType;
 import org.mysqlmv.cd.logevent.eventdef.data.BinaryEventData;
 import org.mysqlmv.cd.logevent.eventdef.data.RotateEventData;
-import org.mysqlmv.cd.logevent.eventdef.data.UpdateRowsEventData;
 import org.mysqlmv.cd.logevent.parser.impl.RotateEventDataParser;
-import org.mysqlmv.cd.logevent.parser.impl.UpdateRowsEventDataParser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;

@@ -1,6 +1,7 @@
 package org.mysqlmv.cd.logevent.parser;
 
 import org.mysqlmv.cd.logevent.Event;
+import org.mysqlmv.cd.logevent.EventMiner;
 import org.mysqlmv.cd.logevent.LogEventType;
 import org.mysqlmv.cd.logevent.eventdef.data.*;
 import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
@@ -23,14 +24,14 @@ public class UpdateRowsEventDataParserTest {
     @BeforeClass
     public void switchFile() throws IOException {
         TableMapEventDataParser tableMapParser = new TableMapEventDataParser();
-        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000004", 4L);
-        for (int i = 0; ; i++) {
+        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000008", 4L);
+        while(EventMiner.getINSTANCE().hasNext()) {
             Event ee = EventMiner.getINSTANCE().next();
             if (ee.getHeader().getEventType().equals(LogEventType.TABLE_MAP)) {
                 TableMapEventData tableData = tableMapParser.parse(new ByteArrayInputStream(new java.io.ByteArrayInputStream(((BinaryEventData) (ee.getData())).getData())));
                 TableMapContext.addTableMap(tableData.getTableID(), tableData);
             }
-            if (i == 7) {
+            if (ee.getHeader().getEventType().equals(LogEventType.UPDATE_ROWS)) {
                 event = ee;
                 break;
             }
