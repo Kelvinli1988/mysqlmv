@@ -33,12 +33,12 @@ public abstract class AbstractRowsEventDataParser<T extends RowsEventData> imple
 //        row.setNullColumns(input.readBitSet(getNonZeroLength(data.getColumnUsageBeforeUpdate()), true));
         TableMapEventData tableData = TableMapContext.getTableMap(data.getTableId());
         // get null column bit set.
-        BitSet notNullColumn = input.readBitSet(data.getColumnNum(), true);
+        BitSet nullColumn = input.readBitSet(data.getColumnNum(), true);
         for (int i = 0, j = 0; i < data.getColumnNum(); i++) {
             if (!data.getColumnUsageBeforeUpdate().get(i)) {
                 continue;
             }
-            if (notNullColumn.get(j)) {
+            if (!nullColumn.get(j)) {
                 // column j is not null
                 int typeCode = tableData.getColumnTypeArray()[j] & 0xFF, meta = tableData.getMetadata()[i], length = 0;
                 if (typeCode == ColumnType.STRING.getCode() && meta > 256) {
@@ -141,6 +141,7 @@ public abstract class AbstractRowsEventDataParser<T extends RowsEventData> imple
                 cell.setValue(inputStream.readString(stringLength));
                 break;
             case VARCHAR:
+                cell.setValue(inputStream.readString(inputStream.readInteger(2)));
                 break;
             case VAR_STRING:
                 int varcharLength = meta < 256 ? inputStream.readInteger(1) : inputStream.readInteger(2);

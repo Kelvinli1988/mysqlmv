@@ -25,6 +25,7 @@ public class TableMapEventDataParser implements EventDataParser<TableMapEventDat
         data.setMetaDataLength(stream.readPackedInteger());
         data.setMetadata(readMetadata(stream, data.getColumnTypeArray()));
         data.setColumnNullable(stream.readBitSet(data.getColumnNum(), true));
+        TableMapContext.addTableMap(data.getTableID(), data);
         return data;
     }
 
