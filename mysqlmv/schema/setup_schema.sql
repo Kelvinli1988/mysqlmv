@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `mview_expression`;
 CREATE TABLE `mview_expression` (
   `mview_expression_id` int(11) NOT NULL AUTO_INCREMENT,
   `mview_id` int(11),
-  `mview_expr_type` enum('GROUP','SUM','AVG','COUNT','MIN','MAX','WHERE','PRIMARY','KEY','COLUMN','COUNT_DISTINCT','STDDEV_POP','VAR_POP','STDDEV_SAMP','VAR_SAMP','BIT_AND','BIT_OR','BIT_XOR', 'PERCENTILE','UNIQUE') DEFAULT 'GROUP',
+  `mview_expr_type` varchar(128), /*enum('GROUP','SUM','AVG','COUNT','MIN','MAX','WHERE','PRIMARY','KEY','COLUMN','COUNT_DISTINCT','STDDEV_POP','VAR_POP','STDDEV_SAMP','VAR_SAMP','BIT_AND','BIT_OR','BIT_XOR', 'PERCENTILE','UNIQUE') DEFAULT 'GROUP',*/
   `mview_expression` varchar(10000),
   `mview_expr_alias` varchar(100) default NULL,
   `mview_expr_order` int(11) default '999',
@@ -45,10 +45,11 @@ CREATE TABLE `mview_toi`(
   `mview_id` int(11) NOT NULL ,
   `schema_name` varchar(100),
   `table_name` varchar(100),
+  `alias` varchar(100),
+  `setup_finished` tinyint(1) default 0,
   `create_datetime` DATETIME DEFAULT NULL,
   `last_update_datetime` DATETIME DEFAULT NULL,
-  PRIMARY KEY (`mview_toi_id`),
-  UNIQUE KEY(`mview_id`, `schema_name`, `table_name`)
+  PRIMARY KEY (`mview_toi_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `mview_refresh_log`;
@@ -76,4 +77,15 @@ CREATE TABLE `mview_event_log` (
   `mview_id` int(11),
   `message` varchar(10000),
   PRIMARY KEY (`event_log_id`)
+)ENGINE=InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `bin_log_file_logger`;
+CREATE TABLE `bin_log_file_logger` (
+  `logger_id` int(11) NOT NULL AUTO_INCREMENT,
+  `log_file_name` varchar(100) not null,
+  `start_read_datetime` datetime,
+  `rotate_datatime` DATETIME,
+  `last_read_time` timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `last_pointer` LONG,
+  PRIMARY KEY (`logger_id`)
 )ENGINE=InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET=utf8;
