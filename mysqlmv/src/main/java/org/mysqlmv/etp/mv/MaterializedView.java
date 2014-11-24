@@ -6,6 +6,8 @@ import com.alibaba.druid.sql.ast.SQLStatement;
  * Created by Kelvin Li on 11/21/2014 3:38 PM.
  */
 public class MaterializedView {
+    private int id;
+
     private String name;
 
     private String originalSchema;
@@ -44,5 +46,13 @@ public class MaterializedView {
 
     public void setDefObj(SQLStatement defObj) {
         this.defObj = defObj;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
