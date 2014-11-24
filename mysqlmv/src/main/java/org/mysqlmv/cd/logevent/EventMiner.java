@@ -34,7 +34,7 @@ public class EventMiner implements Iterator<Event>, Switchable {
      */
     private InputStream logFileStream;
 
-    private boolean streamClosed = true;
+//    private boolean streamClosed = true;
     /**
      * for log.
      */
@@ -44,6 +44,23 @@ public class EventMiner implements Iterator<Event>, Switchable {
      */
     private long lastPointer;
 
+    // if the strategy is not set or set as LATEST read the latest log file.
+
+
+    public EventMiner setLastPointer(long lastPointer) {
+        this.lastPointer = lastPointer;
+        return this;
+    }
+
+    public EventMiner setCurrentFileName(String currentFileName) {
+        this.currentFileName = currentFileName;
+        try {
+            logFileStream = new FileInputStream(currentFileName);
+        } catch (FileNotFoundException e) {
+            // ignore.
+        }
+        return this;
+    }
 
     private EventMiner() {
         headerParser = new EventHeaderV4Parser();
@@ -74,7 +91,7 @@ public class EventMiner implements Iterator<Event>, Switchable {
         if (logFileStream != null && currentFileName != null) {
             try {
                 logFileStream.close();
-                streamClosed = true;
+//                streamClosed = true;
             } catch (IOException e) {
                 logger.warn("Fail to close binary log file : " + currentFileName, e);
             }
@@ -84,7 +101,7 @@ public class EventMiner implements Iterator<Event>, Switchable {
             logFileStream = new FileInputStream(newFile);
             isValidLogFile = validateLogFile(logFileStream);
             if(isValidLogFile) {
-                streamClosed = false;
+//                streamClosed = false;
                 logFileStream.skip(startPoint - 4);// skip unused bytes, usually it is 4;
             } else {
                 logFileStream.close();
@@ -110,24 +127,24 @@ public class EventMiner implements Iterator<Event>, Switchable {
         return Arrays.equals(MAGIC_HEADER, magicPart);
     }
 
-    private void checkStream() {
-        if (streamClosed) {
-            try {
-                logFileStream = new FileInputStream(currentFileName);
-                logFileStream.skip(lastPointer);
-            } catch (FileNotFoundException e) {
-                logger.error("Binary log file is missing, log file path: " + currentFileName, e);
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                logger.error("Fail to read log file, log file path: " + currentFileName, e);
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    private void checkStream() {
+//        if (streamClosed) {
+//            try {
+//                logFileStream = new FileInputStream(currentFileName);
+//                logFileStream.skip(lastPointer);
+//            } catch (FileNotFoundException e) {
+//                logger.error("Binary log file is missing, log file path: " + currentFileName, e);
+//                throw new RuntimeException(e);
+//            } catch (IOException e) {
+//                logger.error("Fail to read log file, log file path: " + currentFileName, e);
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 
     @Override
     public Event next() {
-        checkStream();
+//        checkStream();
         EventHeader header = null;
         byte[] eventData = null;
         try {
@@ -145,9 +162,6 @@ public class EventMiner implements Iterator<Event>, Switchable {
 
     @Override
     public boolean hasNext() {
-        if(streamClosed) {
-            return false;
-        }
         int available = 0;
         try {
             available = logFileStream.available();
@@ -155,7 +169,7 @@ public class EventMiner implements Iterator<Event>, Switchable {
             logger.error("Fail to access log file and try to close stream, log file path: " + currentFileName, e);
             try {
                 logFileStream.close();
-                streamClosed = true;
+//                streamClosed = true;
             } catch (IOException ex) {
                 logger.error("Fail to close log file, log file path: " + currentFileName, ex);
             }
@@ -163,7 +177,7 @@ public class EventMiner implements Iterator<Event>, Switchable {
         if (available <= 0) {
             try {
                 logFileStream.close();
-                streamClosed = true;
+//                streamClosed = true;
             } catch (IOException e) {
                 logger.error("Fail to close log file, log file path: " + currentFileName, e);
             }

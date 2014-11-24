@@ -31,7 +31,7 @@ public class ConfigFactory {
         }
     }
 
-    public static String getProperty(String key) {
+    public String getProperty(String key) {
         return String.valueOf(prop.get(key));
     }
 }
