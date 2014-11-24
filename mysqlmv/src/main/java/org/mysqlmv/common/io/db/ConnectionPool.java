@@ -1,6 +1,7 @@
 package org.mysqlmv.common.io.db;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+
+import com.alibaba.druid.pool.DruidDataSource;
 import org.mysqlmv.common.config.reader.ConfigFactory;
 
 import java.sql.Connection;
@@ -10,18 +11,24 @@ import java.sql.SQLException;
  * Created by Kelvin Li on 11/21/2014 3:14 PM.
  */
 public class ConnectionPool {
-    private static ComboPooledDataSource ds;
+    private static com.alibaba.druid.pool.DruidDataSource ds;
     static {
-        ds = new ComboPooledDataSource();
+        ds = new DruidDataSource();
+        ConfigFactory cfg = ConfigFactory.getINSTANCE();
+        System.out.println(cfg.getProperty("jdbc.url"));
+        ds.setUrl(cfg.getProperty("jdbc.url"));
+//        ds.setJdbcUrl();
+        System.out.println(cfg.getProperty("username"));
+        ds.setUsername(cfg.getProperty("username"));
+        System.out.println(cfg.getProperty("password"));
+        ds.setPassword(cfg.getProperty("password"));
+        System.out.println(cfg.getProperty("initcount"));
+        ds.setInitialSize(Integer.parseInt(cfg.getProperty("initcount")));
+        System.out.println(cfg.getProperty("maxcount"));
+        ds.setMaxActive(Integer.parseInt(cfg.getProperty("maxcount")));
     }
 
     private ConnectionPool() {
-        ConfigFactory cfg = ConfigFactory.getINSTANCE();
-        ds.setJdbcUrl(cfg.getProperty("jdbc.url"));
-        ds.setUser(cfg.getProperty("username"));
-        ds.setPassword(cfg.getProperty("password"));
-        ds.setInitialPoolSize(Integer.parseInt(cfg.getProperty("initcount")));
-        ds.setMaxPoolSize(Integer.parseInt(cfg.getProperty("maxcount")));
     }
 
     public static Connection getConnection() throws SQLException {
