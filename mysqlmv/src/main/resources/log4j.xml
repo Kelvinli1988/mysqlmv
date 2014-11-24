@@ -25,6 +25,29 @@
             <param name="ConversionPattern" value="%d [%t] [%-5p] %C %L - %m%n" />
         </layout>
     </appender>
+    <!-- 每天一个日志文件 -->
+    <appender name="dailyfile.etp.sqlparser" class="org.apache.log4j.DailyRollingFileAppender">
+        <!-- 发布时需更改到指定目录 -->
+        <param name="File" value="log/etp/sql_parser.log" />
+        <param name="Append" value="true" />
+        <param name="Encoding" value="UTF-8" />
+        <param name="DatePattern" value="'.'yyyy_MM_dd" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] [%-5p] %C %L - %m%n" />
+        </layout>
+    </appender>
+
+    <!-- 每天一个日志文件 -->
+    <appender name="dailyfile.druid" class="org.apache.log4j.DailyRollingFileAppender">
+        <!-- 发布时需更改到指定目录 -->
+        <param name="File" value="log/common/druid.log" />
+        <param name="Append" value="true" />
+        <param name="Encoding" value="UTF-8" />
+        <param name="DatePattern" value="'.'yyyy_MM_dd" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] [%-5p] %C %L - %m%n" />
+        </layout>
+    </appender>
 
     <!-- 循环日志-->
     <appender name="rollfile" class="org.apache.log4j.RollingFileAppender">
@@ -44,6 +67,15 @@
         <level value="debug"/>
         <appender-ref ref="console"/>
         <appender-ref ref="dailyfile.cd.logevent"/>
+    </logger>
+    <logger name="org.mysqlmv.etp">
+        <level value="debug"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="dailyfile.etp.sqlparser"/>
+    </logger>
+    <logger name="com.alibaba.druid">
+        <level value="debug"/>
+        <appender-ref ref="dailyfile.druid"/>
     </logger>
     <root>
         <level value="debug"/>
