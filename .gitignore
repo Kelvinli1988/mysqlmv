@@ -2,5 +2,5 @@
 mysqlmv/.idea/
 *.iml
 *.class
-#mysqlmv/target/
+mysqlmv/target/
 mysqlmv/log/
