@@ -1,6 +1,17 @@
 # Windows image file caches
-mysqlmv/.idea/
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+.idea/
 *.iml
-*.class
-mysqlmv/target/
-mysqlmv/log/
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
