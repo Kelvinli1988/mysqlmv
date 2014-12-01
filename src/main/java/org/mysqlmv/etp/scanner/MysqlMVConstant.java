@@ -3,7 +3,7 @@ package org.mysqlmv.etp.scanner;
 /**
  * Created by Kelvin Li on 12/1/2014 10:17 AM.
  */
-public class MysqlMVConstants1 {
+public class MysqlMVConstant {
     public static final String TABLE_NAME_FORMAT = "cd_log_%s_%s";
 
     public static final String CREATE_TOI_TEMPLATE = "CREATE TABLE `" + TABLE_NAME_FORMAT + "`(" +
