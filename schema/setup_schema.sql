@@ -86,6 +86,6 @@ CREATE TABLE `bin_log_file_logger` (
   `start_read_datetime` datetime,
   `rotate_datatime` DATETIME,
   `last_read_time` timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `last_pointer` LONG,
+  `last_pointer` BIGINT,
   PRIMARY KEY (`logger_id`)
 )ENGINE=InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET=utf8;

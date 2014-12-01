@@ -16,7 +16,7 @@ public class LogMinerTest {
 
     @BeforeClass
     public void switchFile() throws IOException {
-        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000011", 4L);
+        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000018", 4L);
         long start = System.currentTimeMillis();
 //        for(int i=0; i<16010 ; i++) {
 //            if(EventMiner.getINSTANCE().hasNext()) {
@@ -38,6 +38,7 @@ public class LogMinerTest {
         while(em.hasNext()) {
             Event rawEvent = em.next();
             eventList.add(EventParsers.parse(rawEvent));
+            System.out.println(rawEvent.getHeader());
         }
         Assert.assertEquals(eventList.size(), 0);
     }

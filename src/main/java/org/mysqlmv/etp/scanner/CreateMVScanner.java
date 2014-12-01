@@ -58,7 +58,7 @@ public class CreateMVScanner implements Runnable {
 
     private void initializeMV(MaterializedView mv) throws SQLException {
         logger.info("Find materialized view to setup, id:" + mv.getId() + ", schema:" + mv.getOriginalSchema() + ", name:" + mv.getName() + ", " +
-                "\ndefinition: " + mv.getDefStr());
+                "definition: " + mv.getDefStr());
         List<SQLStatement> stmtList = SQLUtils.parseStatements(mv.getDefStr(), JdbcConstants.MYSQL);
         if (stmtList.size() != 1) {
             logger.error("Invalid materialized view definition!");
@@ -111,22 +111,15 @@ public class CreateMVScanner implements Runnable {
 
     private String getTOITableName(String schema, String table) {
 //        String pattern = "cd_log_%s_%s";
-        return String.format("cd_log_%s_%s", schema, table);
+        return String.format(MysqlMVConstants.TABLE_NAME_FORMAT, schema, table);
     }
 
     private void createTOI(String schema, String table) throws SQLException {
         logger.info("create cd_log table for schema:" + schema + ", table:" + table);
-        String tmpl = "CREATE TABLE `cd_log_%s_%s`(\n" +
-                "  `id` bigint(20) not null auto_increment,\n" +
-                "  `rec_id` int(11) not null,\n" +
-                "  `opr_type` varchar(10),\n" +
-                "  `is_applied` tinyint(1) DEFAULT 0,\n" +
-                "  `create_datetime` datetime default null,\n" +
-                "  `last_update_time` timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,\n" +
-                "  PRIMARY KEY (`id`)\n" +
-                ")ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+        String createTOISql = String.format(MysqlMVConstants.CREATE_TOI_TEMPLATE, schema, table);
+        logger.debug(createTOISql);
         Statement stmt = ConnectionUtil.getConnection().createStatement();
-        stmt.execute(String.format(tmpl, schema, table));
+        stmt.execute(createTOISql);
         stmt.close();
     }
 

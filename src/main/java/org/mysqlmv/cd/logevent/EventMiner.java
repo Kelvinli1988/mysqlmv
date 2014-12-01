@@ -99,7 +99,7 @@ public class EventMiner implements Iterator<Event>, Switchable {
         boolean isValidLogFile = false;
         try {
             logFileStream = new FileInputStream(newFile);
-            isValidLogFile = validateLogFile(logFileStream);
+            isValidLogFile = validateLogFile();
             if(isValidLogFile) {
 //                streamClosed = false;
                 logFileStream.skip(startPoint - 4);// skip unused bytes, usually it is 4;
@@ -120,10 +120,11 @@ public class EventMiner implements Iterator<Event>, Switchable {
         return true;
     }
 
-    private boolean validateLogFile(InputStream input) throws IOException {
+    public boolean validateLogFile() throws IOException {
         byte[] MAGIC_HEADER = {(byte) 0xfe, (byte) 0x62, (byte) 0x69, (byte) 0x6e};
         byte[] magicPart = new byte[MAGIC_HEADER.length];
-        input.read(magicPart);
+        logFileStream.read(magicPart);
+        lastPointer += MAGIC_HEADER.length;
         return Arrays.equals(MAGIC_HEADER, magicPart);
     }
 
@@ -149,8 +150,10 @@ public class EventMiner implements Iterator<Event>, Switchable {
         byte[] eventData = null;
         try {
             header = headerParser.parse(new ByteArrayInputStream(logFileStream));
+            lastPointer += header.getHeaderLength();
             eventData = new byte[header.getDataLength()];
             logFileStream.read(eventData);
+            lastPointer += header.getDataLength();
         } catch (IOException e) {
             logger.error("Fail to read log file, log file path: " + currentFileName, e);
             throw new RuntimeException(e);
@@ -188,5 +191,21 @@ public class EventMiner implements Iterator<Event>, Switchable {
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
+    }
+
+    public void release() {
+        try {
+            this.logFileStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public long getLastPointer() {
+        return lastPointer;
+    }
+
+    public String getCurrentFileName() {
+        return currentFileName;
     }
 }
