@@ -113,17 +113,16 @@ public class CreateMVScanner implements Runnable {
             // update the setup_finished field
             updateTOISetup(schemaName, tableName);
         }
-
     }
 
     private String getTOITableName(String schema, String table) {
 //        String pattern = "cd_log_%s_%s";
-        return String.format(MysqlMVConstants.TABLE_NAME_FORMAT, schema, table);
+        return String.format(MysqlMVConstant.TABLE_NAME_FORMAT, schema, table);
     }
 
     private void createTOI(String schema, String table) throws SQLException {
         logger.info("create cd_log table for schema:" + schema + ", table:" + table);
-        String createTOISql = String.format(MysqlMVConstants.CREATE_TOI_TEMPLATE, schema, table);
+        String createTOISql = String.format(MysqlMVConstant.CREATE_TOI_TEMPLATE, schema, table);
         logger.debug(createTOISql);
         Statement stmt = ConnectionUtil.getConnection().createStatement();
         stmt.execute(createTOISql);
