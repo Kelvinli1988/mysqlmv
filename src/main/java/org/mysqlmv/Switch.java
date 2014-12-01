@@ -9,11 +9,11 @@ public class Switch {
 
     private volatile boolean status;
 
-    public void startup() {
+    public synchronized void startup() {
         status = true;
     }
 
-    public void shutdown() {
+    public synchronized void shutdown() {
         status = false;
     }
 
