@@ -2,10 +2,10 @@ package org.mysqlmv.cd.workers.impl;
 
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.EventMiner;
+import org.mysqlmv.cd.logevent.EventProcessor;
 import org.mysqlmv.cd.logevent.parser.EventParsers;
-import org.mysqlmv.cd.workers.EventDispatcher;
+import org.mysqlmv.cd.logevent.processors.DefaultEventProcessor;
 import org.mysqlmv.cd.workers.LogFileChangeProcessor;
-import org.mysqlmv.common.config.reader.ConfigFactory;
 import org.mysqlmv.common.io.db.ConnectionUtil;
 import org.mysqlmv.common.io.db.DBUtil;
 import org.mysqlmv.common.io.db.QueryCallBack;
@@ -21,7 +21,7 @@ import java.sql.SQLException;
  */
 public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
 
-//    private volatile int currentLogRecordId;
+    EventProcessor eventProcessor = new DefaultEventProcessor();
 
     @Override
     public void onFileChange(File logfile) throws SQLException {
@@ -34,8 +34,6 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
         long lastPointer = 0L;
         int currentLogRecordId = 0;
         if(isFirstTime) {
-            // 2. get log file strategy.
-            String strategy = ConfigFactory.getINSTANCE().getProperty("log.miner.strategy");
             currentLogFile = logfile.getAbsolutePath();
             lastPointer = 4;
             currentLogRecordId = initBinLogRecord(currentLogFile, lastPointer);
@@ -44,13 +42,15 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
             currentLogFile = loggerRS.getString("log_file_name");
             currentLogRecordId = loggerRS.getInt("logger_id");
         }
+        loggerRS.close();
+        stmt.close();
         // 3. read log.
         EventMiner miner = EventMiner.getINSTANCE().setCurrentFileName(currentLogFile).setLastPointer(lastPointer);
         while(miner.hasNext()) {
             Event event = miner.next();
             try {
                 event = EventParsers.parse(event);
-                EventDispatcher.dispatchEvent(event);
+                eventProcessor.processEvent(event);
             } catch (IOException e) {
                 e.printStackTrace();
             }

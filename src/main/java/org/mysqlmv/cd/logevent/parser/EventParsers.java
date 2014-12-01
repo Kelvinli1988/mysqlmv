@@ -36,9 +36,8 @@ public class EventParsers {
         }
         EventHeader header = rawEvent.getHeader();
         BinaryEventData rawData = rawEvent.getData();
-        ByteArrayInputStream bi = new ByteArrayInputStream(new java.io.ByteArrayInputStream(rawData.getData()));
+        ByteArrayInputStream bi = new ByteArrayInputStream(rawData.getData());
         EventData parsedData = parserMap.get(header.getEventType()).parse(bi);
         return new Event(header, parsedData);
     }
-
 }
