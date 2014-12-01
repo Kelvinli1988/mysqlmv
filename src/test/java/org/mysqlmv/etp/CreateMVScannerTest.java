@@ -1,5 +1,6 @@
 package org.mysqlmv.etp;
 
+import org.mysqlmv.Switch;
 import org.mysqlmv.etp.scanner.CreateMVScanner;
 import org.testng.annotations.Test;
 
@@ -9,7 +10,10 @@ import org.testng.annotations.Test;
 public class CreateMVScannerTest {
     @Test
     public void test() {
-        CreateMVScanner mvScanner = new CreateMVScanner();
-        mvScanner.run();
+        Switch sw = Switch.getSwitch();
+        sw.startup();
+        new CreateMVScanner().run();
+//        Thread mvScanner = new Thread(new CreateMVScanner());
+//        mvScanner.start();
     }
 }

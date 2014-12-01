@@ -30,7 +30,7 @@ public class LogFileChangeDetector implements Runnable {
 
     @Override
     public void run() {
-        logRoot = ConfigFactory.getINSTANCE().getProperty("ConfigFactory");
+        logRoot = ConfigFactory.getINSTANCE().getProperty("log-root-folder");
         Switch controller = Switch.getSwitch();
         while(controller.getStatus()) {
             scannLog();
@@ -40,8 +40,10 @@ public class LogFileChangeDetector implements Runnable {
     private void scannLog() {
         try {
             File logFile = new File(findCurrentLogFile());
-            if(logFile.lastModified() > lastChangeTimeStamp) {
+            long lastmodify = logFile.lastModified();
+            if(lastmodify > lastChangeTimeStamp) {
                 processor.onFileChange(logFile);
+                lastChangeTimeStamp = lastmodify;
             }
         } catch (IOException e) {
 
@@ -70,10 +72,10 @@ public class LogFileChangeDetector implements Runnable {
         }
         String line = null;
         while((line = indexReader.readLine()) != null) {
-            if(line.contains("\\.\\")) {
-                currentLogFile = line.replace("\\.\\", "");
+            if(line.contains(".\\")) {
+                currentLogFile = line.replace(".\\", "");
             }
         }
-        return logRoot + File.pathSeparator + currentLogFile;
+        return logRoot + "/" + currentLogFile;
     }
 }

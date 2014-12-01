@@ -24,9 +24,10 @@ public class DefaultEventProcessor implements EventProcessor {
             } catch (SQLException ex) {
 
             }
-
         } else if(event.getData() instanceof RowsEventData) {
             processRowEvent(event);
+        } else if(event.getHeader().getEventType().equals(LogEventType.TABLE_MAP)) {
+            processTableMapEvent(event);
         }
     }
 
@@ -39,7 +40,7 @@ public class DefaultEventProcessor implements EventProcessor {
         DBUtil.executeInPrepareStmt(new QueryCallBack() {
             @Override
             public String getSql() {
-                return "update bin_log_file_logger set rotate_datatime = ? where logger_id in(select logger_id from bin_log_file_logger order by id desc limit 1)";
+                return "update bin_log_file_logger set rotate_datatime = ? where logger_id in(select logger_id from bin_log_file_logger order by logger_id desc limit 1)";
             }
 
             @Override
@@ -67,6 +68,10 @@ public class DefaultEventProcessor implements EventProcessor {
     }
 
     private void processRowEvent(Event event) {
+
+    }
+
+    private void processTableMapEvent(Event event) {
 
     }
 }

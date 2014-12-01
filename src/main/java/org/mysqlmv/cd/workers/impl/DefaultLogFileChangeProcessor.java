@@ -25,7 +25,7 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
 
     @Override
     public void onFileChange(File logfile) throws SQLException {
-        String findLoggerSQL = "select * from bin_log_file_logger order by id desc limit 1";
+        String findLoggerSQL = "select * from bin_log_file_logger order by logger_id desc limit 1";
         PreparedStatement stmt = ConnectionUtil.getConnection().prepareStatement(findLoggerSQL);
         stmt.execute();
         ResultSet loggerRS = stmt.getResultSet();

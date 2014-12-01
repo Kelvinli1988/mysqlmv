@@ -49,6 +49,11 @@ public class EventMiner implements Iterator<Event>, Switchable {
 
     public EventMiner setLastPointer(long lastPointer) {
         this.lastPointer = lastPointer;
+        try {
+            logFileStream.skip(this.lastPointer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -150,10 +155,10 @@ public class EventMiner implements Iterator<Event>, Switchable {
         byte[] eventData = null;
         try {
             header = headerParser.parse(new ByteArrayInputStream(logFileStream));
-            lastPointer += header.getHeaderLength();
+//            lastPointer += header.getHeaderLength();
             eventData = new byte[header.getDataLength()];
             logFileStream.read(eventData);
-            lastPointer += header.getDataLength();
+//            lastPointer += header.getDataLength();
         } catch (IOException e) {
             logger.error("Fail to read log file, log file path: " + currentFileName, e);
             throw new RuntimeException(e);

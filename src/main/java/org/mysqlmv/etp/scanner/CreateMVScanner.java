@@ -5,6 +5,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.util.JdbcConstants;
+import org.mysqlmv.Switch;
 import org.mysqlmv.common.io.db.ConnectionUtil;
 import org.mysqlmv.etp.mv.MaterializedView;
 import org.mysqlmv.etp.mv.MviewSetupVisitor;
@@ -23,9 +24,15 @@ public class CreateMVScanner implements Runnable {
     @Override
     public void run() {
         try {
-            runTask();
+            Switch aswitch = Switch.getSwitch();
+            while(aswitch.getStatus()) {
+                runTask();
+//                Thread.sleep(100L);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
         }
     }
 
