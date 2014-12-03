@@ -15,6 +15,7 @@ import org.mysqlmv.etp.scanner.MysqlMVConstant;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Kelvin Li on 12/1/2014 5:17 PM.
@@ -54,7 +55,7 @@ public class RowEventProcessor implements Runnable {
 
     private void processInsert(int idOrdinal) throws SQLException {
         RowsEventData data = rowEvent.getData();
-        List<ToiValue> vValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
+        Set<ToiValue> vValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
         for(RowsEventData.Row row: data.getRows()) {
             for(ToiValue toiValue : vValueList) {
                 int id = (Integer)row.getCells().get(idOrdinal).getValue();
@@ -67,7 +68,7 @@ public class RowEventProcessor implements Runnable {
 
     private void processUpdate(int idOrdinal) throws SQLException {
         RowsEventData data = rowEvent.getData();
-        List<ToiValue> vValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
+        Set<ToiValue> vValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
         for(RowsEventData.Row row: data.getRows()) {
             for(ToiValue toiValue : vValueList) {
                 int id = (Integer)row.getCells().get(idOrdinal).getValue();
@@ -80,7 +81,7 @@ public class RowEventProcessor implements Runnable {
 
     private void processDelete(int idOrdinal) throws SQLException {
         RowsEventData data = rowEvent.getData();
-        List<ToiValue> tValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
+        Set<ToiValue> tValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
         for(int i=0; i<data.getRows().size();) {
             for (ToiValue toiValue : tValueList) {
                 int toiId = toiValue.getMviewToiId();
