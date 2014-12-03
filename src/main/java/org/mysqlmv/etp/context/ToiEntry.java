@@ -22,4 +22,13 @@ public class ToiEntry implements Serializable {
     public String getTable() {
         return table;
     }
+
+    public int hashCode() {
+        return (schema + table).hashCode();
+    }
+
+    public boolean equals(Object obj) {
+        if(obj == null) return false;
+        return this.hashCode() == obj.hashCode();
+    }
 }

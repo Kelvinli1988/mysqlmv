@@ -29,4 +29,8 @@ public class ToiContext {
         }
         return toRet;
     }
+
+    public static boolean contains(ToiEntry entry) {
+        return toiContextMap.containsKey(entry);
+    }
 }

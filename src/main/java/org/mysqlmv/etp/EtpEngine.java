@@ -40,8 +40,8 @@ public class EtpEngine {
     }
 
     public void start() {
-        Thread mvScannerThread = new Thread(mvScanner);
-        Thread logDetectorThread = new Thread(logFileChangeDetector);
+        Thread mvScannerThread = new Thread(mvScanner, "MVScanner");
+        Thread logDetectorThread = new Thread(logFileChangeDetector, "Log-detector");
         mvScannerThread.start();
         logger.info("MV scanner started.");
         logDetectorThread.start();

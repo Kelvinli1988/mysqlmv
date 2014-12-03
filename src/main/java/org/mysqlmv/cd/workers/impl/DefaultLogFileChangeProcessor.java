@@ -1,5 +1,6 @@
 package org.mysqlmv.cd.workers.impl;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.EventMiner;
 import org.mysqlmv.cd.logevent.EventProcessor;
@@ -9,6 +10,7 @@ import org.mysqlmv.cd.workers.LogFileChangeProcessor;
 import org.mysqlmv.common.io.db.ConnectionUtil;
 import org.mysqlmv.common.io.db.DBUtil;
 import org.mysqlmv.common.io.db.QueryCallBack;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,10 +23,12 @@ import java.sql.SQLException;
  */
 public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
 
+    public static Logger logger = org.slf4j.LoggerFactory.getLogger(DefaultLogFileChangeProcessor.class);
+
     EventProcessor eventProcessor = new DefaultEventProcessor();
 
     @Override
-    public void onFileChange(File logfile) throws SQLException {
+    public void onFileChange(File logfile) throws SQLException, IOException {
         String findLoggerSQL = "select * from bin_log_file_logger order by logger_id desc limit 1";
         PreparedStatement stmt = ConnectionUtil.getConnection().prepareStatement(findLoggerSQL);
         stmt.execute();
@@ -48,12 +52,8 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
         EventMiner miner = EventMiner.getINSTANCE().setCurrentFileName(currentLogFile).setLastPointer(lastPointer);
         while(miner.hasNext()) {
             Event event = miner.next();
-            try {
-                event = EventParsers.parse(event);
-                eventProcessor.processEvent(event);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            event = EventParsers.parse(event);
+            eventProcessor.processEvent(event);
         }
         miner.release();
         lastPointer = miner.getLastPointer();

@@ -63,7 +63,7 @@
     </appender>
 
     <!--%d [%t] %C %L %p - %m%n-->
-    <logger name="org.mysqlmv.cd.logevent">
+    <logger name="org.mysqlmv.cd">
         <level value="debug"/>
         <appender-ref ref="console"/>
         <appender-ref ref="dailyfile.cd.logevent"/>

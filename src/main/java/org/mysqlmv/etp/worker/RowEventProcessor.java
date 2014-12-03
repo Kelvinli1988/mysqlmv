@@ -7,10 +7,12 @@ import org.mysqlmv.cd.logevent.eventdef.data.TableMapEventData;
 import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
 import org.mysqlmv.common.io.db.DBUtil;
 import org.mysqlmv.common.io.db.QueryCallBack;
+import org.mysqlmv.etp.context.EoiContext;
 import org.mysqlmv.etp.context.ToiContext;
 import org.mysqlmv.etp.context.ToiEntry;
 import org.mysqlmv.etp.context.ToiValue;
 import org.mysqlmv.etp.scanner.MysqlMVConstant;
+import org.slf4j.Logger;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -21,6 +23,7 @@ import java.util.Set;
  * Created by Kelvin Li on 12/1/2014 5:17 PM.
  */
 public class RowEventProcessor implements Runnable {
+    public static Logger logger = org.slf4j.LoggerFactory.getLogger(RowEventProcessor.class);
 
     private Event rowEvent;
 
@@ -32,6 +35,7 @@ public class RowEventProcessor implements Runnable {
     public void run() {
         try {
             runTask();
+            logger.info("event processed");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -58,7 +62,7 @@ public class RowEventProcessor implements Runnable {
         Set<ToiValue> vValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
         for(RowsEventData.Row row: data.getRows()) {
             for(ToiValue toiValue : vValueList) {
-                int id = (Integer)row.getCells().get(idOrdinal).getValue();
+                int id = (Integer)row.getCells().get(idOrdinal - 1).getValue();
                 int toiId = toiValue.getMviewToiId();
                 insertTOI(id, toiId, RowOperation.INSERT);
             }
@@ -131,7 +135,7 @@ public class RowEventProcessor implements Runnable {
                 pstmt.execute();
                 rs = pstmt.getResultSet();
                 if(rs.next()) {
-                    rs.getInt(1);
+                    return rs.getInt(1);
                 }
                 return null;
             }

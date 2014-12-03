@@ -9,6 +9,9 @@ import org.mysqlmv.cd.logevent.eventdef.data.TableMapEventData;
 import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
 import org.mysqlmv.common.io.db.DBUtil;
 import org.mysqlmv.common.io.db.QueryCallBack;
+import org.mysqlmv.etp.context.EoiContext;
+import org.mysqlmv.etp.context.ToiContext;
+import org.mysqlmv.etp.context.ToiEntry;
 import org.mysqlmv.etp.worker.RowEventProcessService;
 
 import java.sql.Date;
@@ -28,7 +31,9 @@ public class DefaultEventProcessor implements EventProcessor {
 
             }
         } else if(event.getData() instanceof RowsEventData) {
-            processRowEvent(event);
+            if(EoiContext.isEoi(event)) {
+                processRowEvent(event);
+            }
         } else if(event.getHeader().getEventType().equals(LogEventType.TABLE_MAP)) {
             processTableMapEvent(event);
         }
@@ -77,5 +82,10 @@ public class DefaultEventProcessor implements EventProcessor {
     private void processTableMapEvent(Event event) {
         TableMapEventData data = event.getData();
         TableMapContext.addTableMap(data.getTableID(), data);
+        String schema = data.getDbName();
+        String table = data.getTableName();
+        if(ToiContext.contains(new ToiEntry(schema, table))) {
+            EoiContext.addTable(data.getTableID());
+        }
     }
 }
