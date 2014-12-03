@@ -26,12 +26,17 @@ public class EtpEngine {
     public void init() {
         try {
             initToiContext();
+            logger.info("TOI context initialization finished.");
         } catch (SQLException e) {
             logger.error("Error happens when initializing table of interest context.", e);
         }
         initMVScanner();
+        logger.info("MV scanner initialization finished.");
         initLogFileChangeDetector();
-        initRowEventProcessor();
+        logger.info("Log file change detector initialization finished.");
+        initRowEventProcessService();
+        logger.info("Row event process service initialization finished.");
+
     }
 
     private void initToiContext() throws SQLException {
@@ -66,7 +71,7 @@ public class EtpEngine {
         logFileChangeDetector = new LogFileChangeDetector();
     }
 
-    private void initRowEventProcessor() {
+    private void initRowEventProcessService() {
         RowEventProcessService.init();
     }
 }
