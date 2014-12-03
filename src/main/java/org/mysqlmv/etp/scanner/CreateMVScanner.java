@@ -37,11 +37,6 @@ public class CreateMVScanner implements Runnable {
     }
 
     private void runTask() throws SQLException {
-        // 1. get connection
-        // 2. get un-setup materialized view
-        // 3. parse the mv definition, and create relative exprs
-        // 4. create the deta table and relative intermediate tables
-        // 5.
         Connection conn = ConnectionUtil.getConnection();
         if (conn == null) {
             logger.error("Fail to get data source");
@@ -116,7 +111,6 @@ public class CreateMVScanner implements Runnable {
     }
 
     private String getTOITableName(String schema, String table) {
-//        String pattern = "cd_log_%s_%s";
         return String.format(MysqlMVConstant.TABLE_NAME_FORMAT, schema, table);
     }
 

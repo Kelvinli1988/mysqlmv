@@ -13,4 +13,9 @@ public class WriteRowsEventData extends RowsEventData {
     public void setColumnUsageAfterUpdate(BitSet columnUsageAfterUpdate) {
         throw new UnsupportedOperationException();
     }
+
+    public RowOperation getOperation() {
+        return RowOperation.INSERT;
+    }
+
 }

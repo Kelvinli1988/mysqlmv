@@ -191,4 +191,8 @@ public class RowsEventData implements EventData {
             this.columnType = columnType;
         }
     }
+
+    public RowOperation getOperation() {
+        throw new UnsupportedOperationException();
+    }
 }

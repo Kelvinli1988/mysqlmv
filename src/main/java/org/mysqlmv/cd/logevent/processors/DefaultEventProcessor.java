@@ -5,8 +5,11 @@ import org.mysqlmv.cd.logevent.EventProcessor;
 import org.mysqlmv.cd.logevent.LogEventType;
 import org.mysqlmv.cd.logevent.eventdef.data.RotateEventData;
 import org.mysqlmv.cd.logevent.eventdef.data.RowsEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.TableMapEventData;
+import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
 import org.mysqlmv.common.io.db.DBUtil;
 import org.mysqlmv.common.io.db.QueryCallBack;
+import org.mysqlmv.etp.worker.RowEventProcessService;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -68,10 +71,11 @@ public class DefaultEventProcessor implements EventProcessor {
     }
 
     private void processRowEvent(Event event) {
-
+        RowEventProcessService.submitRowEvent(event);
     }
 
     private void processTableMapEvent(Event event) {
-
+        TableMapEventData data = event.getData();
+        TableMapContext.addTableMap(data.getTableID(), data);
     }
 }

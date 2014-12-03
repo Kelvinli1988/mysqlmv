@@ -14,4 +14,8 @@ public class DeleteRowsEventData extends RowsEventData {
         throw new UnsupportedOperationException();
     }
 
+    public RowOperation getOperation() {
+        return RowOperation.DELETE;
+    }
+
 }
