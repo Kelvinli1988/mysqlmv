@@ -34,6 +34,11 @@ public class LogFileChangeDetector implements Runnable {
         Switch controller = Switch.getSwitch();
         while(controller.getStatus()) {
             scannLog();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

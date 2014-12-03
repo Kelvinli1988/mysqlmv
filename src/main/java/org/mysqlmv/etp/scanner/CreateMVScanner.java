@@ -27,12 +27,12 @@ public class CreateMVScanner implements Runnable {
             Switch aswitch = Switch.getSwitch();
             while(aswitch.getStatus()) {
                 runTask();
-//                Thread.sleep(100L);
+                Thread.sleep(1000L);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

@@ -36,7 +36,17 @@ public class EtpEngine {
         logger.info("Log file change detector initialization finished.");
         initRowEventProcessService();
         logger.info("Row event process service initialization finished.");
+        logger.info("Etp engine initialization finished.");
+    }
 
+    public void start() {
+        Thread mvScannerThread = new Thread(mvScanner);
+        Thread logDetectorThread = new Thread(logFileChangeDetector);
+        mvScannerThread.start();
+        logger.info("MV scanner started.");
+        logDetectorThread.start();
+        logger.info("Log file change detector started.");
+        logger.info("Etp engine started.");
     }
 
     private void initToiContext() throws SQLException {
