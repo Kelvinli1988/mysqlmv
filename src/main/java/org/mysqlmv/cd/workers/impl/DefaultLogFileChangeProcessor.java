@@ -1,9 +1,9 @@
 package org.mysqlmv.cd.workers.impl;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.EventMiner;
 import org.mysqlmv.cd.logevent.EventProcessor;
+import org.mysqlmv.cd.logevent.LogEventType;
 import org.mysqlmv.cd.logevent.parser.EventParsers;
 import org.mysqlmv.cd.logevent.processors.DefaultEventProcessor;
 import org.mysqlmv.cd.workers.LogFileChangeProcessor;
@@ -28,7 +28,7 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
     EventProcessor eventProcessor = new DefaultEventProcessor();
 
     @Override
-    public void onFileChange(File logfile) throws SQLException, IOException {
+    public LogFileScanStatus onFileChange(File logfile, boolean isNewFile) throws SQLException, IOException {
         String findLoggerSQL = "select * from bin_log_file_logger order by logger_id desc limit 1";
         PreparedStatement stmt = ConnectionUtil.getConnection().prepareStatement(findLoggerSQL);
         stmt.execute();
@@ -37,7 +37,7 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
         String currentLogFile = null;
         long lastPointer = 0L;
         int currentLogRecordId = 0;
-        if(isFirstTime) {
+        if(isFirstTime || isNewFile) {
             currentLogFile = logfile.getAbsolutePath();
             lastPointer = 4;
             currentLogRecordId = initBinLogRecord(currentLogFile, lastPointer);
@@ -52,21 +52,23 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
         EventMiner miner = EventMiner.getINSTANCE().setCurrentFileName(currentLogFile).setLastPointer(lastPointer);
         int i=0;
         while(miner.hasNext()) {
-            if(i == 1) {
+            Event event = miner.next();
+            event = EventParsers.parse(event);
+            boolean isStopEvent = event.getHeader().getEventType().equals(LogEventType.STOP);
+            if(i == 100 || isStopEvent) {
                 lastPointer = miner.getLastPointer();
                 updateBinLogRecord(currentLogRecordId, lastPointer);
             }
-            Event event = miner.next();
-            try{
-                event = EventParsers.parse(event);
-            } catch(Exception ex) {
-                ex.printStackTrace();
+            if(isStopEvent) {
+                return LogFileScanStatus.STOP;
             }
-
             eventProcessor.processEvent(event);
             i++;
         }
+        lastPointer = miner.getLastPointer();
+        updateBinLogRecord(currentLogRecordId, lastPointer);
         miner.release();
+        return LogFileScanStatus.SUCCESS;
     }
 
     private int initBinLogRecord(final String currentLogFile, final long lastPointer) throws SQLException {

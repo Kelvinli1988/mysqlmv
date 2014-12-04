@@ -6,6 +6,7 @@ import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.EventMiner;
 import org.mysqlmv.cd.logevent.parser.EventParsers;
 import org.mysqlmv.cd.workers.impl.DefaultLogFileChangeProcessor;
+import org.mysqlmv.cd.workers.impl.LogFileScanStatus;
 import org.mysqlmv.common.config.reader.ConfigFactory;
 import org.mysqlmv.common.io.db.ConnectionUtil;
 import org.mysqlmv.common.io.db.DBUtil;
@@ -48,12 +49,19 @@ public class LogFileChangeDetector implements Runnable {
 
     private void scannLog() {
         try {
-            File logFile = new File(findCurrentLogFile());
-            long lastmodify = logFile.lastModified();
-//            if(lastmodify > lastChangeTimeStamp) {
-                processor.onFileChange(logFile);
-//                lastChangeTimeStamp = lastmodify;
-//            }
+            // When mysql is shutdown normally, a stop event will appears in the log file,
+            // then should handle this situation.
+            LogFileScanStatus status = LogFileScanStatus.SUCCESS;
+            while(true) {
+                File logFile = new File(findCurrentLogFile());
+                status = processor.onFileChange(logFile, status.equals(LogFileScanStatus.STOP));
+                if(status.equals(LogFileScanStatus.SUCCESS)) {
+                    break;
+                } else if(status.equals(LogFileScanStatus.STOP)) {
+                    logger.warn("Mysql DB service is shutdown.");
+                }
+            }
+
         } catch (IOException e) {
             logger.error("Error happened when reading bin-log.");
             logger.error(ExceptionUtils.getStackTrace(e));
