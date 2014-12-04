@@ -31,7 +31,7 @@ public class DefaultEventProcessor implements EventProcessor {
 
             }
         } else if(event.getData() instanceof RowsEventData) {
-            if(EoiContext.isEoi(event)) {
+            if(EoiContext.isEoi(((RowsEventData) event.getData()).getTableId())) {
                 processRowEvent(event);
             }
         } else if(event.getHeader().getEventType().equals(LogEventType.TABLE_MAP)) {

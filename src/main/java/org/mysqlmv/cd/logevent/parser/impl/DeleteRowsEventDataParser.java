@@ -14,8 +14,10 @@ public class DeleteRowsEventDataParser extends AbstractRowsEventDataParser<Delet
     @Override
     public DeleteRowsEventData parse(ByteArrayInputStream input) throws IOException {
         DeleteRowsEventData data = new DeleteRowsEventData();
-        parseCommon(input, data);
-        parseRows(input, data);
+        if(parseCommon(input, data)) {
+            parseRows(input, data);
+        }
+
         return data;
     }
 }

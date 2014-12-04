@@ -5,6 +5,7 @@ import org.mysqlmv.cd.logevent.eventdef.data.RowsEventData;
 import org.mysqlmv.cd.logevent.eventdef.data.TableMapEventData;
 import org.mysqlmv.cd.logevent.parser.EventDataParser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
+import org.mysqlmv.etp.context.EoiContext;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -20,11 +21,15 @@ public abstract class AbstractRowsEventDataParser<T extends RowsEventData> imple
     private static final int DIG_PER_DEC = 9;
     private static final int[] DIG_TO_BYTES = {0, 1, 1, 2, 2, 3, 3, 4, 4, 4};
 
-    protected void parseCommon(ByteArrayInputStream input, RowsEventData data) throws IOException {
+    protected boolean parseCommon(ByteArrayInputStream input, RowsEventData data) throws IOException {
         data.setTableId(input.readLong(6));
+        if(!EoiContext.isEoi(data.getTableId())) {
+            return false;
+        }
         input.skip(2);
         data.setColumnNum(input.readPackedInteger());
         data.setColumnUsageBeforeUpdate(input.readBitSet(data.getColumnNum(), true));
+        return true;
         // columnUsageAfterUpdate is used for update rows event.
     }
 

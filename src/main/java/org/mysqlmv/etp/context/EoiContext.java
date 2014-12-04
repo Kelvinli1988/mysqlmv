@@ -16,8 +16,8 @@ public class EoiContext {
         tableIdSet.add(tableId);
     }
 
-    public static  boolean isEoi(Event event) {
-        RowsEventData data = event.getData();
-        return tableIdSet.contains(data.getTableId());
+    public static  boolean isEoi(long tableId) {
+//        RowsEventData data = event.getData();
+        return tableIdSet.contains(tableId);
     }
 }

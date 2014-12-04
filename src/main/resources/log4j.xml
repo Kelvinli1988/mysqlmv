@@ -65,12 +65,12 @@
     <!--%d [%t] %C %L %p - %m%n-->
     <logger name="org.mysqlmv.cd">
         <level value="debug"/>
-        <appender-ref ref="console"/>
+        <!--<appender-ref ref="console"/>-->
         <appender-ref ref="dailyfile.cd.logevent"/>
     </logger>
     <logger name="org.mysqlmv.etp">
         <level value="debug"/>
-        <appender-ref ref="console"/>
+        <!--<appender-ref ref="console"/>-->
         <appender-ref ref="dailyfile.etp.sqlparser"/>
     </logger>
     <logger name="com.alibaba.druid">

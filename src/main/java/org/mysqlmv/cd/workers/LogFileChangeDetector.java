@@ -50,14 +50,14 @@ public class LogFileChangeDetector implements Runnable {
         try {
             File logFile = new File(findCurrentLogFile());
             long lastmodify = logFile.lastModified();
-            if(lastmodify > lastChangeTimeStamp) {
+//            if(lastmodify > lastChangeTimeStamp) {
                 processor.onFileChange(logFile);
-                lastChangeTimeStamp = lastmodify;
-            }
+//                lastChangeTimeStamp = lastmodify;
+//            }
         } catch (IOException e) {
             logger.error("Error happened when reading bin-log.");
             logger.error(ExceptionUtils.getStackTrace(e));
-            throw new RuntimeException(e);
+//            throw new RuntimeException(e);
         } catch (SQLException e) {
             e.printStackTrace();
         }

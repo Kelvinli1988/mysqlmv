@@ -50,14 +50,23 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
         stmt.close();
         // 3. read log.
         EventMiner miner = EventMiner.getINSTANCE().setCurrentFileName(currentLogFile).setLastPointer(lastPointer);
+        int i=0;
         while(miner.hasNext()) {
+            if(i == 1) {
+                lastPointer = miner.getLastPointer();
+                updateBinLogRecord(currentLogRecordId, lastPointer);
+            }
             Event event = miner.next();
-            event = EventParsers.parse(event);
+            try{
+                event = EventParsers.parse(event);
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+
             eventProcessor.processEvent(event);
+            i++;
         }
         miner.release();
-        lastPointer = miner.getLastPointer();
-        updateBinLogRecord(currentLogRecordId, lastPointer);
     }
 
     private int initBinLogRecord(final String currentLogFile, final long lastPointer) throws SQLException {

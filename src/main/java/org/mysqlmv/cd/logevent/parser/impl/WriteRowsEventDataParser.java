@@ -13,8 +13,9 @@ public class WriteRowsEventDataParser extends AbstractRowsEventDataParser<WriteR
     @Override
     public WriteRowsEventData parse(ByteArrayInputStream input) throws IOException {
         WriteRowsEventData data = new WriteRowsEventData();
-        parseCommon(input, data);
-        parseRows(input, data);
+        if(parseCommon(input, data)) {
+            parseRows(input, data);
+        }
         return data;
     }
 }
