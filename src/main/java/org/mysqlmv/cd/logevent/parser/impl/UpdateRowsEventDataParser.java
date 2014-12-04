@@ -13,10 +13,10 @@ public class UpdateRowsEventDataParser extends AbstractRowsEventDataParser<Updat
     @Override
     public UpdateRowsEventData parse(ByteArrayInputStream input) throws IOException {
         UpdateRowsEventData data = new UpdateRowsEventData();
-        if(parseCommon(input, data)) {
+        if(parseCommon(input, data)) {}
             data.setColumnUsageAfterUpdate(input.readBitSet(data.getColumnNum(), true));
             parseRows(input, data);
-        }
+//        }
         return data;
     }
 }

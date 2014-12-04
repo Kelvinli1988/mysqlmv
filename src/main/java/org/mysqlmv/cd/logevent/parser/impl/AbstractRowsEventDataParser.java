@@ -23,9 +23,9 @@ public abstract class AbstractRowsEventDataParser<T extends RowsEventData> imple
 
     protected boolean parseCommon(ByteArrayInputStream input, RowsEventData data) throws IOException {
         data.setTableId(input.readLong(6));
-        if(!EoiContext.isEoi(data.getTableId())) {
-            return false;
-        }
+//        if(!EoiContext.isEoi(data.getTableId())) {
+//            return false;
+//        }
         input.skip(2);
         data.setColumnNum(input.readPackedInteger());
         data.setColumnUsageBeforeUpdate(input.readBitSet(data.getColumnNum(), true));
@@ -146,8 +146,6 @@ public abstract class AbstractRowsEventDataParser<T extends RowsEventData> imple
                 cell.setValue(inputStream.readString(stringLength));
                 break;
             case VARCHAR:
-                cell.setValue(inputStream.readString(inputStream.readInteger(2)));
-                break;
             case VAR_STRING:
                 int varcharLength = meta < 256 ? inputStream.readInteger(1) : inputStream.readInteger(2);
                 cell.setValue(inputStream.readString(varcharLength));
