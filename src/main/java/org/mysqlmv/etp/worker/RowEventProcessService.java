@@ -30,7 +30,7 @@ public class RowEventProcessService {
         if(isInitialized) {
             return;
         }
-        service = Executors.newFixedThreadPool(2);
+        service = Executors.newFixedThreadPool(1);
         isInitialized = true;
     }
 }

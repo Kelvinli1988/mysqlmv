@@ -5,6 +5,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import org.mysqlmv.common.config.reader.ConfigFactory;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
@@ -32,6 +33,12 @@ public class ConnectionPool {
     }
 
     public static Connection getConnection() throws SQLException {
-        return ds.getConnection();
+//        return ds.getConnection();
+        String url="jdbc:mysql://localhost:3306/mysqlmv?user=root&password=123456";
+        return DriverManager.getConnection(url);
+    }
+
+    public static void releaseConnection() {
+//        ds.
     }
 }

@@ -52,13 +52,18 @@ public class LogFileChangeDetector implements Runnable {
             // When mysql is shutdown normally, a stop event will appears in the log file,
             // then should handle this situation.
             LogFileScanStatus status = LogFileScanStatus.SUCCESS;
+            File logFile = new File(findCurrentLogFile());
+            boolean isNewFile = false;
             while(true) {
-                File logFile = new File(findCurrentLogFile());
-                status = processor.onFileChange(logFile, status.equals(LogFileScanStatus.STOP));
+                status = processor.onFileChange(logFile, isNewFile);
                 if(status.equals(LogFileScanStatus.SUCCESS)) {
                     break;
                 } else if(status.equals(LogFileScanStatus.STOP)) {
+                    isNewFile = true;
                     logger.warn("Mysql DB service is shutdown.");
+                } else if(status.equals(LogFileScanStatus.CONTINUE_NEXT)) {
+                    logFile = findNextFile();
+                    isNewFile = true;
                 }
             }
 
@@ -71,10 +76,39 @@ public class LogFileChangeDetector implements Runnable {
         }
     }
 
+    private File findNextFile() throws SQLException, IOException {
+        String findLoggerSQL = "select * from bin_log_file_logger order by logger_id desc limit 1";
+        PreparedStatement stmt = ConnectionUtil.getConnection().prepareStatement(findLoggerSQL);
+        stmt.execute();
+        ResultSet loggerRS = stmt.getResultSet();
+        loggerRS.next();
+        String currentLogFile = loggerRS.getString("log_file_name");
+        loggerRS.close();
+        stmt.close();
 
+        String curFileName = new File(currentLogFile).getName();
+        File indexFile = findIndexLogfile();
+        BufferedReader indexReader = new BufferedReader(new FileReader(indexFile));
+        if(indexReader == null) {
+            return null;
+        }
+        String line = null;
+        while((line = indexReader.readLine()) != null) {
+            if(line.contains(".\\")) {
+                line = line.replace(".\\", "");
+                if(curFileName.equals(line)) {
+                    line = indexReader.readLine().replace(".\\", "");
+                    break;
+                }
+            }
+        }
+        if("".equals(line)) {
+            return null;
+        }
+        return new File(logRoot + "/" + line);
+    }
 
-    private String findCurrentLogFile() throws IOException {
-        String currentLogFile = null;
+    public File findIndexLogfile() {
         File logDir = new File(logRoot);
         File indexFile = null;
         for(File ff : logDir.listFiles()) {
@@ -82,9 +116,12 @@ public class LogFileChangeDetector implements Runnable {
                 indexFile = ff;
             }
         }
-        if(indexFile == null) {
-            return null;
-        }
+        return indexFile;
+    }
+
+    private String findCurrentLogFile() throws IOException {
+        String currentLogFile = null;
+        File indexFile = findIndexLogfile();
         BufferedReader indexReader = new BufferedReader(new FileReader(indexFile));
         if(indexReader == null) {
             return null;

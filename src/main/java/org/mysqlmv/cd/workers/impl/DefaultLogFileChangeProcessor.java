@@ -51,6 +51,10 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
         // 3. read log.
         EventMiner miner = EventMiner.getINSTANCE().setCurrentFileName(currentLogFile).setLastPointer(lastPointer);
         int i=0;
+        boolean hasNext = miner.hasNext();
+        if(!hasNext && !logfile.getAbsolutePath().equals(currentLogFile)) {
+            return LogFileScanStatus.CONTINUE_NEXT;
+        }
         while(miner.hasNext()) {
             Event event = miner.next();
             event = EventParsers.parse(event);

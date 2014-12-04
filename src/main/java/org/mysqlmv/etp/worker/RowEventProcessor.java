@@ -1,9 +1,7 @@
 package org.mysqlmv.etp.worker;
 
 import org.mysqlmv.cd.logevent.Event;
-import org.mysqlmv.cd.logevent.eventdef.data.RowOperation;
-import org.mysqlmv.cd.logevent.eventdef.data.RowsEventData;
-import org.mysqlmv.cd.logevent.eventdef.data.TableMapEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.*;
 import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
 import org.mysqlmv.common.io.db.DBUtil;
 import org.mysqlmv.common.io.db.QueryCallBack;
@@ -34,6 +32,7 @@ public class RowEventProcessor implements Runnable {
     @Override
     public void run() {
         try {
+            logger.info("event will be processed");
             runTask();
             logger.info("event processed");
         } catch (SQLException e) {
@@ -48,11 +47,11 @@ public class RowEventProcessor implements Runnable {
         table = tMap.getTableName();
         int ordinal = this.findPKOrdinal(schema, table);
         List<RowsEventData.Row> rows = data.getRows();
-        if(data.getOperation().equals(RowOperation.DELETE)) {
+        if(data instanceof DeleteRowsEventData) {
             processDelete(ordinal);
-        } else if(data.getOperation().equals(RowOperation.INSERT)) {
+        } else if(data instanceof WriteRowsEventData) {
             processInsert(ordinal);
-        } else {
+        } else if(data instanceof UpdateRowsEventData) {
             processUpdate(ordinal);
         }
     }
@@ -70,12 +69,12 @@ public class RowEventProcessor implements Runnable {
         }
     }
 
-    private void processUpdate(int idOrdinal) throws SQLException {
+    private void processDelete(int idOrdinal) throws SQLException {
         RowsEventData data = rowEvent.getData();
         Set<ToiValue> vValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
         for(RowsEventData.Row row: data.getRows()) {
             for(ToiValue toiValue : vValueList) {
-                int id = (Integer)row.getCells().get(idOrdinal).getValue();
+                int id = (Integer)row.getCells().get(idOrdinal - 1).getValue();
                 int toiId = toiValue.getMviewToiId();
                 insertTOI(id, toiId, RowOperation.DELETE);
             }
@@ -83,18 +82,21 @@ public class RowEventProcessor implements Runnable {
         }
     }
 
-    private void processDelete(int idOrdinal) throws SQLException {
+    private void processUpdate(int idOrdinal) throws SQLException {
         RowsEventData data = rowEvent.getData();
         Set<ToiValue> tValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
         for(int i=0; i<data.getRows().size();) {
+            int id = (Integer) data.getRows().get(i).getCells().get(idOrdinal - 1).getValue();
             for (ToiValue toiValue : tValueList) {
                 int toiId = toiValue.getMviewToiId();
-                int id = (Integer) data.getRows().get(i).getCells().get(idOrdinal).getValue();
                 insertTOI(id, toiId, RowOperation.UPDATE_D);
-                i++;
-                id = (Integer) data.getRows().get(i).getCells().get(idOrdinal).getValue();
+            }
+            i++;
+            for (ToiValue toiValue : tValueList) {
+                int toiId = toiValue.getMviewToiId();
                 insertTOI(id, toiId, RowOperation.UPDATE_I);
             }
+            i++;
         }
     }
 
