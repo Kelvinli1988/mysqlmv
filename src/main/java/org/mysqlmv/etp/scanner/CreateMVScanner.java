@@ -1,8 +1,7 @@
 package org.mysqlmv.etp.scanner;
 
 import org.mysqlmv.Switch;
-import org.mysqlmv.common.io.db.DBUtil;
-import org.mysqlmv.etp.dao.MaterializedViewDao;
+import org.mysqlmv.etp.dao.EtpDao;
 import org.mysqlmv.etp.mv.MaterializedView;
 import org.slf4j.Logger;
 
@@ -28,7 +27,7 @@ public class CreateMVScanner implements Runnable {
     }
 
     private void runTask() {
-        List<MaterializedView> mvList = MaterializedViewDao.findUninitializedMV();
+        List<MaterializedView> mvList = EtpDao.findUninitializedMV();
         if(mvList != null && mvList.size() > 0) {
             for(MaterializedView thisMV : mvList) {
                 new MVInitializer(thisMV).initializeMV();

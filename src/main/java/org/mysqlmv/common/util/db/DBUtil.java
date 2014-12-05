@@ -13,19 +13,27 @@ import java.sql.SQLException;
 public class DBUtil {
     public static Logger logger = org.slf4j.LoggerFactory.getLogger(DBUtil.class);
 
-    public static Integer getLastInsertedID() throws SQLException {
-        String sql = "SELECT LAST_INSERT_ID();";
-        PreparedStatement stmt = ConnectionUtil.getConnection().prepareStatement(sql);
-        stmt.execute();
-        ResultSet rs = stmt.getResultSet();
-        while (rs.next()) {
-            return rs.getInt(1);
-        }
-        return null;
+    public static Integer getLastInsertedID() {
+        return (Integer) executeInPrepareStmt(new QueryCallBack<Integer>() {
+            @Override
+            public String getSql() {
+                return "SELECT LAST_INSERT_ID()";
+            }
+
+            @Override
+            public Integer doInCallback(PreparedStatement pstmt) throws SQLException {
+                pstmt.execute();
+                rs = pstmt.getResultSet();
+                while (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return null;
+            }
+        });
     }
 
-    public static Object executeInPrepareStmt(QueryCallBack cb) {
-        Object result = null;
+    public static<T> T  executeInPrepareStmt(QueryCallBack<T> cb) {
+        T result = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
@@ -39,11 +47,11 @@ public class DBUtil {
         } catch (SQLException e) {
             logger.error("Meet SQL Exception.");
             logger.error(ExceptionUtils.getStackTrace(e));
-            try{
-                if(rs != null && !rs.isClosed()) {
+            try {
+                if (rs != null && !rs.isClosed()) {
                     rs.close();
                 }
-                if(pstmt != null && !pstmt.isClosed()) {
+                if (pstmt != null && !pstmt.isClosed()) {
                     pstmt.close();
                 }
             } catch (SQLException e1) {
