@@ -5,7 +5,6 @@ import org.mysqlmv.cd.logevent.eventdef.data.*;
 import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
 import org.mysqlmv.common.io.db.DBUtil;
 import org.mysqlmv.common.io.db.QueryCallBack;
-import org.mysqlmv.etp.context.EoiContext;
 import org.mysqlmv.etp.context.ToiContext;
 import org.mysqlmv.etp.context.ToiEntry;
 import org.mysqlmv.etp.context.ToiValue;

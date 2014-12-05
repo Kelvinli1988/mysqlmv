@@ -1,14 +1,9 @@
 package org.mysqlmv.etp.mv;
 
-import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlCreateUserStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
-import org.mysqlmv.common.io.db.ConnectionUtil;
 import org.mysqlmv.etp.scanner.MVContext;
 import org.slf4j.Logger;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 /**
  * Created by Kelvin Li on 11/24/2014 1:16 PM.
