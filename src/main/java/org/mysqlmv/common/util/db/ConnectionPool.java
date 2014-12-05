@@ -1,4 +1,4 @@
-package org.mysqlmv.common.io.db;
+package org.mysqlmv.common.util.db;
 
 
 import com.alibaba.druid.pool.DruidDataSource;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * Created by Kelvin Li on 11/21/2014 3:14 PM.
  */
 public class ConnectionPool {
-    private static com.alibaba.druid.pool.DruidDataSource ds;
+    private static DruidDataSource ds;
     static {
         ds = new DruidDataSource();
         ConfigFactory cfg = ConfigFactory.getINSTANCE();

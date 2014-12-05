@@ -1,4 +1,4 @@
-package org.mysqlmv.common.io.db;
+package org.mysqlmv.common.util.db;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -8,10 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Created by Kelvin Li on 11/24/2014 3:41 PM.
+ * Created by Kelvin Li on 12/5/2014 1:34 PM.
  */
 public class DBUtil {
-
     public static Logger logger = org.slf4j.LoggerFactory.getLogger(DBUtil.class);
 
     public static Integer getLastInsertedID() throws SQLException {

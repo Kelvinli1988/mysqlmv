@@ -1,7 +1,8 @@
 package org.mysqlmv.etp.dao;
 
 
-import org.mysqlmv.common.io.db.QueryCallBack;
+import org.mysqlmv.common.util.db.DBUtil;
+import org.mysqlmv.common.util.db.QueryCallBack;
 import org.mysqlmv.etp.context.ToiEntry;
 import org.mysqlmv.etp.mv.MaterializedView;
 
@@ -19,6 +20,7 @@ public class MaterializedViewDao {
             public String getSql() {
                 return "select * from mview where mview_setup_finished = 0 and mview_name is not null";
             }
+
             @Override
             public List<MaterializedView> doInCallback(PreparedStatement pstmt) throws SQLException {
                 rs = pstmt.executeQuery();
@@ -35,6 +37,7 @@ public class MaterializedViewDao {
             }
         });
     }
+
 
     public static List<ToiEntry> findUnsetupToiEntry() {
         return (List<ToiEntry>)DBUtil.executeInPrepareStmt(new QueryCallBack<List<ToiEntry>>() {
@@ -55,7 +58,4 @@ public class MaterializedViewDao {
         });
     }
 
-    public static Boolean isTableExist(final tableName) {
-
-    }
 }

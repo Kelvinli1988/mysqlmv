@@ -1,4 +1,4 @@
-package org.mysqlmv.common.io.db;
+package org.mysqlmv.common.util.db;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
