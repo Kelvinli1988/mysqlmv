@@ -3,15 +3,12 @@ package org.mysqlmv.etp.worker;
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.eventdef.data.*;
 import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
-import org.mysqlmv.common.io.db.DBUtil;
-import org.mysqlmv.common.io.db.QueryCallBack;
 import org.mysqlmv.etp.context.ToiContext;
 import org.mysqlmv.etp.context.ToiEntry;
 import org.mysqlmv.etp.context.ToiValue;
-import org.mysqlmv.etp.scanner.MysqlMVConstant;
+import org.mysqlmv.etp.dao.EtpDao;
 import org.slf4j.Logger;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +41,7 @@ public class RowEventProcessor implements Runnable {
         TableMapEventData tMap = TableMapContext.getTableMap(data.getTableId());
         schema = tMap.getDbName();
         table = tMap.getTableName();
-        int ordinal = this.findPKOrdinal(schema, table);
+        int ordinal = EtpDao.findPKOrdinal(schema, table);
         List<RowsEventData.Row> rows = data.getRows();
         if(data instanceof DeleteRowsEventData) {
             processDelete(ordinal);
@@ -62,7 +59,7 @@ public class RowEventProcessor implements Runnable {
             for(ToiValue toiValue : vValueList) {
                 int id = (Integer)row.getCells().get(idOrdinal - 1).getValue();
                 int toiId = toiValue.getMviewToiId();
-                insertTOI(id, toiId, RowOperation.INSERT);
+                EtpDao.insertTOI(schema, table, id, toiId, RowOperation.INSERT);
             }
 
         }
@@ -75,7 +72,7 @@ public class RowEventProcessor implements Runnable {
             for(ToiValue toiValue : vValueList) {
                 int id = (Integer)row.getCells().get(idOrdinal - 1).getValue();
                 int toiId = toiValue.getMviewToiId();
-                insertTOI(id, toiId, RowOperation.DELETE);
+                EtpDao.insertTOI(schema, table, id, toiId, RowOperation.DELETE);
             }
 
         }
@@ -88,59 +85,15 @@ public class RowEventProcessor implements Runnable {
             int id = (Integer) data.getRows().get(i).getCells().get(idOrdinal - 1).getValue();
             for (ToiValue toiValue : tValueList) {
                 int toiId = toiValue.getMviewToiId();
-                insertTOI(id, toiId, RowOperation.UPDATE_D);
+                EtpDao.insertTOI(schema, table, id, toiId, RowOperation.UPDATE_D);
             }
             i++;
             for (ToiValue toiValue : tValueList) {
                 int toiId = toiValue.getMviewToiId();
-                insertTOI(id, toiId, RowOperation.UPDATE_I);
+                EtpDao.insertTOI(schema, table, id, toiId, RowOperation.UPDATE_I);
             }
             i++;
         }
-    }
-
-
-
-    private void insertTOI(final int rec_id,
-                           final int mview_toi_id, final RowOperation opr_type) throws SQLException {
-        DBUtil.executeInPrepareStmt(new QueryCallBack() {
-            @Override
-            public String getSql() {
-                return "insert into " + String.format(MysqlMVConstant.TABLE_NAME_FORMAT, schema, table)
-                        +"(rec_id, mview_toi_id, opr_type, is_applied, create_datetime) " +
-                        "values(?, ?, ?, 0, now())";
-            }
-            @Override
-            public Object doInCallback(PreparedStatement pstmt) throws SQLException {
-                pstmt.setInt(1, rec_id);
-                pstmt.setInt(2, mview_toi_id);
-                pstmt.setInt(3, opr_type.getValue());
-                pstmt.execute();
-                return null;
-            }
-        });
-    }
-
-    private int findPKOrdinal(final String schema, final String table) throws SQLException {
-        return (Integer) DBUtil.executeInPrepareStmt(new QueryCallBack<Integer>() {
-            @Override
-            public String getSql() {
-                return "select ordinal_position from information_schema.columns " +
-                        "where table_schema = ? and table_name = ? " +
-                        "and column_key = 'PRI';";
-            }
-            @Override
-            public Integer doInCallback(PreparedStatement pstmt) throws SQLException {
-                pstmt.setString(1, schema);
-                pstmt.setString(2, table);
-                pstmt.execute();
-                rs = pstmt.getResultSet();
-                if(rs.next()) {
-                    return rs.getInt(1);
-                }
-                return null;
-            }
-        });
     }
 
     public RowEventProcessor(Event rowEvent) {

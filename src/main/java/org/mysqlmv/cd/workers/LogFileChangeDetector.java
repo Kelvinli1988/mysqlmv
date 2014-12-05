@@ -2,16 +2,13 @@ package org.mysqlmv.cd.workers;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mysqlmv.Switch;
+import org.mysqlmv.cd.dao.CdDao;
 import org.mysqlmv.cd.workers.impl.DefaultLogFileChangeProcessor;
 import org.mysqlmv.cd.workers.impl.LogFileScanStatus;
 import org.mysqlmv.common.config.reader.ConfigFactory;
-import org.mysqlmv.common.io.db.ConnectionUtil;
-import org.mysqlmv.common.io.db.DBUtil;
 import org.slf4j.Logger;
 
 import java.io.*;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -71,16 +68,8 @@ public class LogFileChangeDetector implements Runnable {
     }
 
     private File findNextFile() throws SQLException, IOException {
-        String findLoggerSQL = "select * from bin_log_file_logger order by logger_id desc limit 1";
-        PreparedStatement stmt = ConnectionUtil.getConnection().prepareStatement(findLoggerSQL);
-        stmt.execute();
-        ResultSet loggerRS = stmt.getResultSet();
-        loggerRS.next();
-        String currentLogFile = loggerRS.getString("log_file_name");
-        loggerRS.close();
-        stmt.close();
-
-        String curFileName = new File(currentLogFile).getName();
+        String logFullName = CdDao.findCurrentLogFileName();
+        String curFileName = new File(logFullName).getName();
         File indexFile = findIndexLogfile();
         BufferedReader indexReader = new BufferedReader(new FileReader(indexFile));
         if(indexReader == null) {

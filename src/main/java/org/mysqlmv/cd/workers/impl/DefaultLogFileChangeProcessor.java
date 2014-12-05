@@ -1,21 +1,14 @@
 package org.mysqlmv.cd.workers.impl;
 
-import org.mysqlmv.cd.logevent.Event;
-import org.mysqlmv.cd.logevent.EventMiner;
-import org.mysqlmv.cd.logevent.EventProcessor;
-import org.mysqlmv.cd.logevent.LogEventType;
+import org.mysqlmv.cd.dao.CdDao;
+import org.mysqlmv.cd.logevent.*;
 import org.mysqlmv.cd.logevent.parser.EventParsers;
 import org.mysqlmv.cd.logevent.processors.DefaultEventProcessor;
 import org.mysqlmv.cd.workers.LogFileChangeProcessor;
-import org.mysqlmv.common.io.db.ConnectionUtil;
-import org.mysqlmv.common.io.db.DBUtil;
-import org.mysqlmv.common.io.db.QueryCallBack;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -29,30 +22,16 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
 
     @Override
     public LogFileScanStatus onFileChange(File logfile, boolean isNewFile) throws SQLException, IOException {
-        String findLoggerSQL = "select * from bin_log_file_logger order by logger_id desc limit 1";
-        PreparedStatement stmt = ConnectionUtil.getConnection().prepareStatement(findLoggerSQL);
-        stmt.execute();
-        ResultSet loggerRS = stmt.getResultSet();
-        boolean isFirstTime = !loggerRS.next();
-        String currentLogFile = null;
-        long lastPointer = 0L;
-        int currentLogRecordId = 0;
-        if(isFirstTime || isNewFile) {
-            currentLogFile = logfile.getAbsolutePath();
-            lastPointer = 4;
-            currentLogRecordId = initBinLogRecord(currentLogFile, lastPointer);
-        } else {
-            lastPointer = loggerRS.getLong("last_pointer");
-            currentLogFile = loggerRS.getString("log_file_name");
-            currentLogRecordId = loggerRS.getInt("logger_id");
-        }
-        loggerRS.close();
-        stmt.close();
+        LogFileStatus fileStatus  = getLogFile(logfile, isNewFile);
+        long lastPointer = fileStatus.getLastPointer();
+        int id = fileStatus.getId();
+        String fileName = fileStatus.getFileName();
         // 3. read log.
-        EventMiner miner = EventMiner.getINSTANCE().setCurrentFileName(currentLogFile).setLastPointer(lastPointer);
+        EventMiner miner = EventMiner.getINSTANCE().setCurrentFileName(fileName)
+                .setLastPointer(lastPointer);
         int i=0;
         boolean hasNext = miner.hasNext();
-        if(!hasNext && !logfile.getAbsolutePath().equals(currentLogFile)) {
+        if(!hasNext && !logfile.getAbsolutePath().equals(fileName)) {
             return LogFileScanStatus.CONTINUE_NEXT;
         }
         while(miner.hasNext()) {
@@ -61,7 +40,7 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
             boolean isStopEvent = event.getHeader().getEventType().equals(LogEventType.STOP);
             if(i == 100 || isStopEvent) {
                 lastPointer = miner.getLastPointer();
-                updateBinLogRecord(currentLogRecordId, lastPointer);
+                CdDao.updateLogFileStatus(id, lastPointer);
             }
             if(isStopEvent) {
                 return LogFileScanStatus.STOP;
@@ -70,42 +49,18 @@ public class DefaultLogFileChangeProcessor implements LogFileChangeProcessor {
             i++;
         }
         lastPointer = miner.getLastPointer();
-        updateBinLogRecord(currentLogRecordId, lastPointer);
+        CdDao.updateLogFileStatus(id, lastPointer);
         miner.release();
         return LogFileScanStatus.SUCCESS;
     }
 
-    private int initBinLogRecord(final String currentLogFile, final long lastPointer) throws SQLException {
-        DBUtil.executeInPrepareStmt(new QueryCallBack() {
-            @Override
-            public String getSql() {
-                return "insert into bin_log_file_logger(log_file_name, start_read_datetime, rotate_datatime, last_pointer) values(?, now(), null, ?)";
-            }
-
-            @Override
-            public Object doInCallback(PreparedStatement pstmt) throws SQLException {
-                pstmt.setString(1, currentLogFile);
-                pstmt.setLong(2, lastPointer);
-                pstmt.execute();
-                return null;
-            }
-        });
-        return DBUtil.getLastInsertedID();
+    private LogFileStatus getLogFile(File logfile, boolean isNewFile) {
+        LogFileStatus status = CdDao.findLogFileStatus();
+        if(status == null || isNewFile) {
+            status = CdDao.insertNewFileStatus(logfile.getAbsolutePath(), 4);
+        }
+        return status;
     }
 
-    private void updateBinLogRecord(final int currentLogRecordId, final long lastPointer) throws SQLException {
-        DBUtil.executeInPrepareStmt(new QueryCallBack() {
-            @Override
-            public String getSql() {
-                return "update bin_log_file_logger set last_pointer = ? where logger_id = ?";
-            }
-            @Override
-            public Object doInCallback(PreparedStatement pstmt) throws SQLException {
-                pstmt.setLong(1, lastPointer);
-                pstmt.setInt(2, currentLogRecordId);
-                pstmt.executeUpdate();
-                return null;
-            }
-        });
-    }
+
 }

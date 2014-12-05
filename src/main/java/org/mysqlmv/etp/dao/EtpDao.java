@@ -1,6 +1,7 @@
 package org.mysqlmv.etp.dao;
 
 
+import org.mysqlmv.cd.logevent.eventdef.data.RowOperation;
 import org.mysqlmv.common.util.db.DBUtil;
 import org.mysqlmv.common.util.db.QueryCallBack;
 import org.mysqlmv.etp.context.ToiContext;
@@ -173,6 +174,48 @@ public class EtpDao {
 //                    ToiContext.addToiEntry(new ToiEntry(schema, table), new ToiValue(mview_toi_id, mview_id));
                 }
                 return ret;
+            }
+        });
+    }
+
+    public static void insertTOI(final String schema, final String table, final int rec_id,
+                           final int mview_toi_id, final RowOperation opr_type) throws SQLException {
+        DBUtil.executeInPrepareStmt(new QueryCallBack() {
+            @Override
+            public String getSql() {
+                return "insert into " + String.format(MysqlMVConstant.TABLE_NAME_FORMAT, schema, table)
+                        +"(rec_id, mview_toi_id, opr_type, is_applied, create_datetime) " +
+                        "values(?, ?, ?, 0, now())";
+            }
+            @Override
+            public Object doInCallback(PreparedStatement pstmt) throws SQLException {
+                pstmt.setInt(1, rec_id);
+                pstmt.setInt(2, mview_toi_id);
+                pstmt.setInt(3, opr_type.getValue());
+                pstmt.execute();
+                return null;
+            }
+        });
+    }
+
+    public static int findPKOrdinal(final String schema, final String table) throws SQLException {
+        return  DBUtil.executeInPrepareStmt(new QueryCallBack<Integer>() {
+            @Override
+            public String getSql() {
+                return "select ordinal_position from information_schema.columns " +
+                        "where table_schema = ? and table_name = ? " +
+                        "and column_key = 'PRI';";
+            }
+            @Override
+            public Integer doInCallback(PreparedStatement pstmt) throws SQLException {
+                pstmt.setString(1, schema);
+                pstmt.setString(2, table);
+                pstmt.execute();
+                rs = pstmt.getResultSet();
+                if(rs.next()) {
+                    return rs.getInt(1);
+                }
+                return null;
             }
         });
     }
