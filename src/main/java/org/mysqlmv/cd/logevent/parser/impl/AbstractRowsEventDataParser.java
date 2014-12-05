@@ -46,22 +46,26 @@ public abstract class AbstractRowsEventDataParser<T extends RowsEventData> imple
             if (!nullColumn.get(j)) {
                 // column j is not null
                 int typeCode = tableData.getColumnTypeArray()[j] & 0xFF, meta = tableData.getMetadata()[i], length = 0;
-                if (typeCode == ColumnType.STRING.getCode() && meta > 256) {
-                    int meta0 = meta >> 8, meta1 = meta & 0xFF;
-                    if ((meta0 & 0x30) != 0x30) { // long CHAR field
-                        typeCode = meta0 | 0x30;
-                        length = meta1 | (((meta0 & 0x30) ^ 0x30) << 4);
-                    } else {
-                        if (meta0 == ColumnType.SET.getCode() || meta0 == ColumnType.ENUM.getCode() ||
-                                meta0 == ColumnType.STRING.getCode()) {
-                            typeCode = meta0;
-                            length = meta1;
+                if (typeCode == ColumnType.STRING.getCode()) {
+                    if(meta > 256) {
+                        int byte0 = meta >> 8, byte1 = meta & 0xFF;
+                        if ((byte0 & 0x30) != 0x30) { // long CHAR field
+                            typeCode = byte0 | 0x30;
+                            length = byte1 | (((byte0 & 0x30) ^ 0x30) << 4);
                         } else {
-                            throw new IOException("Unexpected meta " + meta + " for column of type " + typeCode);
+                            if (byte0 == ColumnType.SET.getCode() || byte0 == ColumnType.ENUM.getCode() ||
+                                    byte0 == ColumnType.STRING.getCode()) {
+                                typeCode = byte0;
+                                length = byte1;
+                            } else {
+                                throw new IOException("Unexpected meta " + meta + " for column of type " + typeCode);
+                            }
                         }
+                    } else {
+                        length = meta;
                     }
                 }
-                row.getCells().add(parseCell(input, getColumnType(tableData.getColumnTypeArray()[j]), tableData.getMetadata()[j], length));
+                row.getCells().add(parseCell(input, getColumnType(typeCode), tableData.getMetadata()[j], length));
             }
             j++;
         }
@@ -166,7 +170,7 @@ public abstract class AbstractRowsEventDataParser<T extends RowsEventData> imple
         return cell;
     }
 
-    private ColumnType getColumnType(byte code) {
+    private ColumnType getColumnType(int code) {
         return ColumnType.byCode(code & 0xff);
     }
 

@@ -43,7 +43,7 @@ public class CreateMVScanner implements Runnable {
             return;
         }
         Statement stmt = conn.createStatement();
-        String findMVSql = "select * from mview where mview_setup_finished = 0 and mview_name is not null and mview_id = 1";
+        String findMVSql = "select * from mview where mview_setup_finished = 0 and mview_name is not null";
         stmt.execute(findMVSql);
         ResultSet rs = stmt.getResultSet();
         while (rs.next()) {

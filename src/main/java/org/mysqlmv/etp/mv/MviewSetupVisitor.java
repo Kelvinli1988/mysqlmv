@@ -34,7 +34,8 @@ public class MviewSetupVisitor extends MviewMonitorVisitor {
             String table = exprs[1].replace("`", "");
             pstmt.setString(2, schema);
             pstmt.setString(3, table);
-            pstmt.setString(4, from.getAlias().replace("`", ""));
+            String alias = from.getAlias() == null ? "" : from.getAlias();
+            pstmt.setString(4, alias.replace("`", ""));
             logger.info("Insert mview_toi record, schema:" + schema + ", table:" + table);
             pstmt.execute();
             pstmt.close();
