@@ -22,4 +22,9 @@ public class ToiValue implements Serializable {
         this.mviewToiId = mviewToiId;
         this.mviewId = mviewId;
     }
+
+    @Override
+    public String toString() {
+        return "" + mviewToiId + ", " + mviewId;
+    }
 }

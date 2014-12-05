@@ -3,13 +3,17 @@ package org.mysqlmv.etp.dao;
 
 import org.mysqlmv.common.util.db.DBUtil;
 import org.mysqlmv.common.util.db.QueryCallBack;
+import org.mysqlmv.etp.context.ToiContext;
 import org.mysqlmv.etp.context.ToiEntry;
+import org.mysqlmv.etp.context.ToiValue;
 import org.mysqlmv.etp.mv.MaterializedView;
 import org.mysqlmv.etp.scanner.MysqlMVConstant;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mysqlmv.common.util.db.DBUtil.*;
 
@@ -143,6 +147,32 @@ public class EtpDao {
                 pstmt.setInt(1, mv.getId());
                 pstmt.execute();
                 return null;
+            }
+        });
+    }
+
+    public static Map<ToiEntry, ToiValue> findToiContext() {
+        return DBUtil.executeInPrepareStmt(new QueryCallBack<Map<ToiEntry, ToiValue>>() {
+            @Override
+            public String getSql() {
+                return "select mview_toi_id, mview_id, schema_name, table_name " +
+                        "from mview_toi where setup_finished = 1 order by schema_name, table_name";
+            }
+
+            @Override
+            public Map<ToiEntry, ToiValue> doInCallback(PreparedStatement pstmt) throws SQLException {
+                Map<ToiEntry, ToiValue> ret = new HashMap<ToiEntry, ToiValue>();
+                pstmt.execute();
+                rs = pstmt.getResultSet();
+                while(rs.next()) {
+                    String schema = rs.getString("schema_name");
+                    String table = rs.getString("table_name");
+                    int mview_toi_id = rs.getInt("mview_toi_id");
+                    int mview_id = rs.getInt("mview_id");
+                    ret.put(new ToiEntry(schema, table), new ToiValue(mview_toi_id, mview_id));
+//                    ToiContext.addToiEntry(new ToiEntry(schema, table), new ToiValue(mview_toi_id, mview_id));
+                }
+                return ret;
             }
         });
     }

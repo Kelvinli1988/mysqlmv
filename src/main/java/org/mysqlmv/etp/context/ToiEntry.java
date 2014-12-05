@@ -31,4 +31,8 @@ public class ToiEntry implements Serializable {
         if(obj == null) return false;
         return this.hashCode() == obj.hashCode();
     }
+
+    public String toString() {
+        return schema + ", " + table;
+    }
 }
