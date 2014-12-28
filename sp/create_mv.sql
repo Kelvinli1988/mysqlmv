@@ -3,9 +3,9 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS  mysqlmv.create_mv//
 
 CREATE DEFINER=root@localhost PROCEDURE mysqlmv.create_mv(
-  schema_name TEXT,
-  view_name TEXT,
-  refresh_mode TINYINT
+  IN `schema_name` TEXT,
+  IN `view_name` TEXT,
+  IN `refresh_mode` TINYINT
 )
 BEGIN
   DECLARE v_ret INT DEFAULT 0;
@@ -25,7 +25,6 @@ BEGIN
     values(               null,           schema_name,    view_name,        0,
                           0,              refresh_mode,   view_def,         now());
   COMMIT;
-
 END//
 
 DELIMITER ;
