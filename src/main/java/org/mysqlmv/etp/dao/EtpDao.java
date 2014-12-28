@@ -56,7 +56,7 @@ public class EtpDao {
 
             @Override
             public List<ToiEntry> doInCallback(PreparedStatement pstmt) throws SQLException {
-                ResultSet rs = pstmt.getResultSet();
+                rs = pstmt.executeQuery();
                 List<ToiEntry> entryList = new ArrayList<ToiEntry>();
                 while (rs.next()) {
                     entryList.add(new ToiEntry(rs.getString("schema_name"),
@@ -130,13 +130,13 @@ public class EtpDao {
                 pstmt.setString(2, schema);
                 pstmt.setString(3, table);
                 pstmt.setString(4, alias);
+                pstmt.executeUpdate();
                 return null;
             }
         });
     }
 
     public static void updateMVDef(final MaterializedView mv) {
-
         DBUtil.executeInPrepareStmt(new QueryCallBack() {
             @Override
             public String getSql() {

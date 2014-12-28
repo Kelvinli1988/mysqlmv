@@ -1,3 +1,4 @@
+create database mysqlmv;
 use mysqlmv;
 DROP TABLE IF EXISTS `mview`;
 CREATE TABLE `mview` (
