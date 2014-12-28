@@ -1,9 +1,6 @@
 package org.mysqlmv.etp.context;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,6 +17,10 @@ public class ToiContext {
             toiContextMap.put(entry, tvalues);
         }
         tvalues.add(value);
+    }
+
+    public synchronized static void addToiEntry(Map.Entry<ToiEntry, Set<ToiValue>> entry) {
+        toiContextMap.put(entry.getKey(), entry.getValue());
     }
 
     public static Set<ToiValue> getToiValue(ToiEntry entry) {

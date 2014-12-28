@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Kelvin Li on 12/3/2014 2:33 PM.
@@ -50,11 +51,11 @@ public class EtpEngine {
     }
 
     private void initToiContext() throws SQLException {
-        Map<ToiEntry, ToiValue> toiContext = EtpDao.findToiContext();
+        Map<ToiEntry, Set<ToiValue>> toiContext = EtpDao.findToiContext();
         if (!CollectionUtils.isEmpty(toiContext)) {
-            for (Map.Entry<ToiEntry, ToiValue> entry : toiContext.entrySet()) {
-                ToiContext.addToiEntry(entry.getKey(), entry.getValue());
-                logger.info("ToiContext added, entry:<)" + entry.getKey() + ">, value:<" + entry.getValue() + ">");
+            for (Map.Entry<ToiEntry, Set<ToiValue>> entry : toiContext.entrySet()) {
+                ToiContext.addToiEntry(entry);
+//                logger.info("ToiContext added, entry:<)" + entry.getKey() + ">, value:<" + entry.getValue() + ">");
             }
         }
     }
