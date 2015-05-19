@@ -15,6 +15,6 @@ public class SQLParserTest {
     @Test
     public void parse() {
         List<SQLStatement> sqlStmtList = SQLUtils.parseStatements("select `test`.`test_log`.`id` AS `id`,`test`.`test_log`.`name` AS `name` from `test`.`test_log` where (`test`.`test_log`.`id` > 3)", JdbcConstants.MYSQL);
-        Assert.assertEquals(sqlStmtList.size(), 0);
+        Assert.assertEquals(sqlStmtList.size(), 1);
     }
 }

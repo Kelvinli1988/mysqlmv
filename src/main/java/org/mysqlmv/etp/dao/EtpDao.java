@@ -11,10 +11,7 @@ import org.mysqlmv.etp.mv.MaterializedView;
 import org.mysqlmv.etp.scanner.MysqlMVConstant;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.mysqlmv.common.util.db.DBUtil.*;
 
@@ -56,7 +53,7 @@ public class EtpDao {
 
             @Override
             public List<ToiEntry> doInCallback(PreparedStatement pstmt) throws SQLException {
-                ResultSet rs = pstmt.getResultSet();
+                rs = pstmt.executeQuery();
                 List<ToiEntry> entryList = new ArrayList<ToiEntry>();
                 while (rs.next()) {
                     entryList.add(new ToiEntry(rs.getString("schema_name"),
@@ -130,13 +127,13 @@ public class EtpDao {
                 pstmt.setString(2, schema);
                 pstmt.setString(3, table);
                 pstmt.setString(4, alias);
+                pstmt.executeUpdate();
                 return null;
             }
         });
     }
 
     public static void updateMVDef(final MaterializedView mv) {
-
         DBUtil.executeInPrepareStmt(new QueryCallBack() {
             @Override
             public String getSql() {
@@ -152,8 +149,8 @@ public class EtpDao {
         });
     }
 
-    public static Map<ToiEntry, ToiValue> findToiContext() {
-        return DBUtil.executeInPrepareStmt(new QueryCallBack<Map<ToiEntry, ToiValue>>() {
+    public static Map<ToiEntry, Set<ToiValue>> findToiContext() {
+        return DBUtil.executeInPrepareStmt(new QueryCallBack<Map<ToiEntry, Set<ToiValue>>>() {
             @Override
             public String getSql() {
                 return "select mview_toi_id, mview_id, schema_name, table_name " +
@@ -161,8 +158,8 @@ public class EtpDao {
             }
 
             @Override
-            public Map<ToiEntry, ToiValue> doInCallback(PreparedStatement pstmt) throws SQLException {
-                Map<ToiEntry, ToiValue> ret = new HashMap<ToiEntry, ToiValue>();
+            public Map<ToiEntry, Set<ToiValue>> doInCallback(PreparedStatement pstmt) throws SQLException {
+                Map<ToiEntry, Set<ToiValue>> ret = new HashMap<ToiEntry, Set<ToiValue>>();
                 pstmt.execute();
                 rs = pstmt.getResultSet();
                 while(rs.next()) {
@@ -170,8 +167,13 @@ public class EtpDao {
                     String table = rs.getString("table_name");
                     int mview_toi_id = rs.getInt("mview_toi_id");
                     int mview_id = rs.getInt("mview_id");
-                    ret.put(new ToiEntry(schema, table), new ToiValue(mview_toi_id, mview_id));
-//                    ToiContext.addToiEntry(new ToiEntry(schema, table), new ToiValue(mview_toi_id, mview_id));
+                    ToiEntry key = new ToiEntry(schema, table);
+                    Set<ToiValue> tset = ret.get(key);
+                    if(tset == null) {
+                        tset = new HashSet<ToiValue>();
+                        ret.put(key, tset);
+                    }
+                    tset.add(new ToiValue(mview_toi_id, mview_id));
                 }
                 return ret;
             }

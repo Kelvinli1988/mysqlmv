@@ -1,3 +1,4 @@
+create database mysqlmv;
 use mysqlmv;
 DROP TABLE IF EXISTS `mview`;
 CREATE TABLE `mview` (
@@ -76,6 +77,7 @@ CREATE TABLE `mview_event_log` (
   `event_log_id` int(11) NOT NULL AUTO_INCREMENT,
   `mview_id` int(11),
   `message` varchar(10000),
+  `last_read_time` timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`event_log_id`)
 )ENGINE=InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET=utf8;
 

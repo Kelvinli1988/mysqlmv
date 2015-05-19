@@ -47,8 +47,8 @@ public class MVInitializer {
         visitor.setContext(context);
         visitor.visit((MySqlSelectQueryBlock) ((((SQLSelectStatement) stmtList.get(0)).getSelect()).getQuery()));
         logger.info("Update mview definition, mview_id:" + mv.getId());
-        EtpDao.updateMVDef(mv);
         setupTOI();
+        EtpDao.updateMVDef(mv);
     }
 
 

@@ -57,11 +57,16 @@ public class RowEventProcessor implements Runnable {
         Set<ToiValue> vValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
         for(RowsEventData.Row row: data.getRows()) {
             for(ToiValue toiValue : vValueList) {
-                int id = (Integer)row.getCells().get(idOrdinal - 1).getValue();
+                Object idObj = row.getCells().get(idOrdinal - 1).getValue();
+                int id = 0;//Integer);
+                if(idObj instanceof Integer) {
+                    id = (Integer) idObj;
+                } else if(idObj instanceof Long) {
+                    id = ((Long)idObj).intValue();
+                }
                 int toiId = toiValue.getMviewToiId();
                 EtpDao.insertTOI(schema, table, id, toiId, RowOperation.INSERT);
             }
-
         }
     }
 
