@@ -1,7 +1,7 @@
 package org.mysqlmv.etp.worker;
 
 import org.mysqlmv.cd.logevent.Event;
-import org.mysqlmv.cd.logevent.eventdef.data.RowsEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.RowsIEventData;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,7 +46,7 @@ public class RowEventProcessService {
         if(!isInitialized) {
             throw new RuntimeException("Row event process service not initialized yet.");
         }
-        if(event.getData() instanceof RowsEventData) {
+        if(event.getData() instanceof RowsIEventData) {
             service.submit(new RowEventProcessor(event));
         } else {
             // TODO add some logger;

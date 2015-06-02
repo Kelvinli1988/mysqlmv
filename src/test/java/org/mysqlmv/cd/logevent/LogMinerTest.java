@@ -1,6 +1,8 @@
 package org.mysqlmv.cd.logevent;
 
+import org.mysqlmv.cd.logevent.eventdef.data.TableMapIEventData;
 import org.mysqlmv.cd.logevent.parser.EventParsers;
+import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -16,7 +18,7 @@ public class LogMinerTest {
 
     @BeforeClass
     public void switchFile() throws IOException {
-        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000018", 4L);
+        EventMiner.getINSTANCE().switchFile("src/test/resources/PVGN50874064A-bin.000034", 4L);
         long start = System.currentTimeMillis();
 //        for(int i=0; i<16010 ; i++) {
 //            if(EventMiner.getINSTANCE().hasNext()) {
@@ -37,7 +39,12 @@ public class LogMinerTest {
         EventMiner em = EventMiner.getINSTANCE();
         while(em.hasNext()) {
             Event rawEvent = em.next();
-            eventList.add(EventParsers.parse(rawEvent));
+
+            Event ee = EventParsers.parse(rawEvent);
+            eventList.add(ee);
+            if(rawEvent.getHeader().getEventType().equals(LogEventType.TABLE_MAP) ) {
+                TableMapContext.addTableMap(((TableMapIEventData)ee.getData()).getTableID(), (TableMapIEventData)ee.getData());
+            }
             System.out.println(rawEvent.getHeader());
         }
         Assert.assertEquals(eventList.size(), 0);

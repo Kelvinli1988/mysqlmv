@@ -2,6 +2,7 @@ package org.mysqlmv.etp.mv;
 
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import org.mysqlmv.etp.dao.EtpDao;
+import org.mysqlmv.mvm.mv.MviewMonitorVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

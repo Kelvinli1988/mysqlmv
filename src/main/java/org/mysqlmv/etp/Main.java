@@ -4,7 +4,7 @@ import org.mysqlmv.Switch;
 
 /**
  * Created by Kelvin Li on 12/3/2014 2:55 PM.
- */
+ */;
 public class Main {
     public static void main(String[] args) {
         Switch appSwitch = Switch.getSwitch();
@@ -19,6 +19,5 @@ public class Main {
                 e.printStackTrace();
             }
         }
-
     }
 }

@@ -3,7 +3,7 @@ package org.mysqlmv.etp.scanner;
 import org.mysqlmv.Switch;
 import org.mysqlmv.common.util.CollectionUtils;
 import org.mysqlmv.etp.dao.EtpDao;
-import org.mysqlmv.etp.mv.MaterializedView;
+import org.mysqlmv.mvm.mv.MaterializedView;
 import org.slf4j.Logger;
 
 import java.util.List;

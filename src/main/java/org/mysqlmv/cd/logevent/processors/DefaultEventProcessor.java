@@ -4,9 +4,9 @@ import org.mysqlmv.cd.dao.CdDao;
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.EventProcessor;
 import org.mysqlmv.cd.logevent.LogEventType;
-import org.mysqlmv.cd.logevent.eventdef.data.RotateEventData;
-import org.mysqlmv.cd.logevent.eventdef.data.RowsEventData;
-import org.mysqlmv.cd.logevent.eventdef.data.TableMapEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.RotateIEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.RowsIEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.TableMapIEventData;
 import org.mysqlmv.cd.logevent.parser.impl.TableMapContext;
 import org.mysqlmv.etp.context.EoiContext;
 import org.mysqlmv.etp.context.ToiContext;
@@ -27,8 +27,8 @@ public class DefaultEventProcessor implements EventProcessor {
             } catch (SQLException ex) {
 
             }
-        } else if(event.getData() instanceof RowsEventData) {
-            if(EoiContext.isEoi(((RowsEventData) event.getData()).getTableId())) {
+        } else if(event.getData() instanceof RowsIEventData) {
+            if(EoiContext.isEoi(((RowsIEventData) event.getData()).getTableId())) {
                 processRowEvent(event);
             }
         } else if(event.getHeader().getEventType().equals(LogEventType.TABLE_MAP)) {
@@ -37,7 +37,7 @@ public class DefaultEventProcessor implements EventProcessor {
     }
 
     private void processRotateEvent(Event event) throws SQLException {
-        RotateEventData rdata = event.getData();
+        RotateIEventData rdata = (RotateIEventData)event.getData();
         final String nextFile = rdata.getNameOfNextLog();
         final long newPos = rdata.getPosOfNextLog();
         final long eventTime = event.getHeader().getTimestamp();
@@ -52,7 +52,7 @@ public class DefaultEventProcessor implements EventProcessor {
     }
 
     private void processTableMapEvent(Event event) {
-        TableMapEventData data = event.getData();
+        TableMapIEventData data = (TableMapIEventData)event.getData();
         TableMapContext.addTableMap(data.getTableID(), data);
         String schema = data.getDbName();
         String table = data.getTableName();

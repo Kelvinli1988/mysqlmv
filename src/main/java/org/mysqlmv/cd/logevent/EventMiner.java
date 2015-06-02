@@ -1,6 +1,6 @@
 package org.mysqlmv.cd.logevent;
 
-import org.mysqlmv.cd.logevent.eventdef.data.BinaryEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.BinaryIEventData;
 import org.mysqlmv.cd.logevent.parser.EventHeaderParser;
 import org.mysqlmv.cd.logevent.parser.EventHeaderV4Parser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
@@ -134,7 +134,7 @@ public class EventMiner implements Iterator<Event>, Switchable {
     @Override
     public Event next() {
 //        checkStream();
-        EventHeader header = null;
+        IEventHeader header = null;
         byte[] eventData = null;
         try {
             header = headerParser.parse(new ByteArrayInputStream(logFileStream));
@@ -145,7 +145,7 @@ public class EventMiner implements Iterator<Event>, Switchable {
             throw new RuntimeException(e);
         }
         lastPointer = header.getNextPosition();
-        return new Event(header, new BinaryEventData(eventData));
+        return new Event(header, new BinaryIEventData(eventData));
     }
 
     @Override

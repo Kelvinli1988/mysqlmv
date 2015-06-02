@@ -4,10 +4,9 @@ package org.mysqlmv.etp.dao;
 import org.mysqlmv.cd.logevent.eventdef.data.RowOperation;
 import org.mysqlmv.common.util.db.DBUtil;
 import org.mysqlmv.common.util.db.QueryCallBack;
-import org.mysqlmv.etp.context.ToiContext;
 import org.mysqlmv.etp.context.ToiEntry;
 import org.mysqlmv.etp.context.ToiValue;
-import org.mysqlmv.etp.mv.MaterializedView;
+import org.mysqlmv.mvm.mv.MaterializedView;
 import org.mysqlmv.etp.scanner.MysqlMVConstant;
 
 import java.sql.*;

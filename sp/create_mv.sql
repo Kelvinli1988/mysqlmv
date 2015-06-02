@@ -2,14 +2,16 @@ DELIMITER //
 
 DROP PROCEDURE IF EXISTS  mysqlmv.create_mv//
 
-CREATE DEFINER=root@localhost PROCEDURE mysqlmv.create_mv(
-  IN `schema_name` TEXT,
-  IN `view_name` TEXT,
-  IN `refresh_mode` TINYINT
+CREATE DEFINER=mysqlmv@localhost PROCEDURE mysqlmv.create_mv(
+  schema_name TEXT,
+  view_name TEXT,
+  refresh_mode TINYINT
 )
 BEGIN
   DECLARE v_ret INT DEFAULT 0;
   DECLARE view_def TEXT;
+  DECLARE mview_id int;
+  DECLARE check_setup_sql TEXT default '';
 #   DECLARE r_mode_enum ENUM();
   -- 1. get view definition
   select view_definition

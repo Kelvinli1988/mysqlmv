@@ -3,8 +3,8 @@ package org.mysqlmv.cd.logevent.parser;
 import org.mysqlmv.cd.logevent.Event;
 import org.mysqlmv.cd.logevent.EventMiner;
 import org.mysqlmv.cd.logevent.LogEventType;
-import org.mysqlmv.cd.logevent.eventdef.data.BinaryEventData;
-import org.mysqlmv.cd.logevent.eventdef.data.FormatDescriptionEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.BinaryIEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.FormatDescriptionIEventData;
 import org.mysqlmv.cd.logevent.parser.impl.FormatDescriptionEventParser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 import org.testng.Assert;
@@ -31,9 +31,9 @@ public class FormatDescriptionEventParserTest {
         Assert.assertEquals(event.isRawData(), true);
         if(event.isRawData()) {
             // parse the data;
-            BinaryEventData eData = event.getData();
+            BinaryIEventData eData = (BinaryIEventData)event.getData();
             FormatDescriptionEventParser parser = new FormatDescriptionEventParser();
-            FormatDescriptionEventData data =  parser.parse(new ByteArrayInputStream(new java.io.ByteArrayInputStream(eData.getData())));
+            FormatDescriptionIEventData data =  parser.parse(new ByteArrayInputStream(new java.io.ByteArrayInputStream(eData.getData())));
             Assert.assertEquals(data.getLogVersion(), 4);
             Assert.assertEquals(data.getHeaderLength(), 19);
             Assert.assertEquals(data.getServerVersion(), "5.5.27-log");

@@ -1,7 +1,7 @@
 package org.mysqlmv.cd.logevent.parser;
 
 import org.mysqlmv.cd.logevent.*;
-import org.mysqlmv.cd.logevent.eventdef.data.BinaryEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.BinaryIEventData;
 import org.mysqlmv.cd.logevent.parser.impl.*;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 
@@ -34,15 +34,15 @@ public class EventParsers {
         if(rawEvent.getData() == null || !rawEvent.isRawData()) {
             return rawEvent;
         }
-        EventHeader header = rawEvent.getHeader();
-        BinaryEventData rawData = rawEvent.getData();
+        IEventHeader header = rawEvent.getHeader();
+        BinaryIEventData rawData = (BinaryIEventData)rawEvent.getData();
         ByteArrayInputStream bi = new ByteArrayInputStream(rawData.getData());
 
         EventDataParser parser = parserMap.get(header.getEventType());
         if(parser == null) {
             return rawEvent;
         }
-        EventData parsedData = parser.parse(bi);
+        IEventData parsedData = parser.parse(bi);
         return new Event(header, parsedData);
     }
 }

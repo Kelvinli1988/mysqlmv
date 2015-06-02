@@ -1,27 +1,26 @@
 package org.mysqlmv.cd.logevent.parser.impl;
 
 import org.mysqlmv.cd.logevent.eventdef.data.ColumnType;
-import org.mysqlmv.cd.logevent.eventdef.data.RowsEventData;
-import org.mysqlmv.cd.logevent.eventdef.data.TableMapEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.RowsIEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.TableMapIEventData;
 import org.mysqlmv.cd.logevent.parser.EventDataParser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
-import org.mysqlmv.etp.context.EoiContext;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.BitSet;
 import java.util.Calendar;
 
-import static org.mysqlmv.cd.logevent.eventdef.data.RowsEventData.*;
+import static org.mysqlmv.cd.logevent.eventdef.data.RowsIEventData.*;
 
 /**
  * Created by Kelvin Li on 11/17/2014 11:16 AM.
  */
-public abstract class AbstractRowsEventDataParser<T extends RowsEventData> implements EventDataParser<T> {
+public abstract class AbstractRowsEventDataParser<T extends RowsIEventData> implements EventDataParser<T> {
     private static final int DIG_PER_DEC = 9;
     private static final int[] DIG_TO_BYTES = {0, 1, 1, 2, 2, 3, 3, 4, 4, 4};
 
-    protected boolean parseCommon(ByteArrayInputStream input, RowsEventData data) throws IOException {
+    protected boolean parseCommon(ByteArrayInputStream input, RowsIEventData data) throws IOException {
         data.setTableId(input.readLong(6));
 //        if(!EoiContext.isEoi(data.getTableId())) {
 //            return false;
@@ -33,10 +32,10 @@ public abstract class AbstractRowsEventDataParser<T extends RowsEventData> imple
         // columnUsageAfterUpdate is used for update rows event.
     }
 
-    private RowsEventData.Row parseRow(ByteArrayInputStream input, RowsEventData data) throws IOException {
-        RowsEventData.Row row = new RowsEventData.Row();
+    private RowsIEventData.Row parseRow(ByteArrayInputStream input, RowsIEventData data) throws IOException {
+        RowsIEventData.Row row = new RowsIEventData.Row();
 //        row.setNullColumns(input.readBitSet(getNonZeroLength(data.getColumnUsageBeforeUpdate()), true));
-        TableMapEventData tableData = TableMapContext.getTableMap(data.getTableId());
+        TableMapIEventData tableData = TableMapContext.getTableMap(data.getTableId());
         // get null column bit set.
         BitSet nullColumn = input.readBitSet(data.getColumnNum(), true);
         for (int i = 0, j = 0; i < data.getColumnNum(); i++) {
@@ -82,7 +81,7 @@ public abstract class AbstractRowsEventDataParser<T extends RowsEventData> imple
         return ret;
     }
 
-    protected void parseRows(ByteArrayInputStream input, RowsEventData data) throws IOException {
+    protected void parseRows(ByteArrayInputStream input, RowsIEventData data) throws IOException {
         while (input.available() > 0) {
             data.getRows().add(parseRow(input, data));
         }

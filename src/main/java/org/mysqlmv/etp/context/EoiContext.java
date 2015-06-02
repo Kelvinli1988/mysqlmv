@@ -1,8 +1,5 @@
 package org.mysqlmv.etp.context;
 
-import org.mysqlmv.cd.logevent.Event;
-import org.mysqlmv.cd.logevent.eventdef.data.RowsEventData;
-
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -17,7 +14,7 @@ public class EoiContext {
     }
 
     public static  boolean isEoi(long tableId) {
-//        RowsEventData data = event.getData();
+//        RowsIEventData data = event.getData();
         return tableIdSet.contains(tableId);
     }
 }

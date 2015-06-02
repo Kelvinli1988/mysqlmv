@@ -17,10 +17,6 @@ public class SqlMonitorVisitor extends MySqlOutputVisitor{
         Class superClazz = SQLASTOutputVisitor.class;
         Method[] mms = superClazz.getDeclaredMethods();
         for(Method method : mms) {
-//            method.getTypeParameters();
-//            System.out.println(method.getName());
-//            System.out.println(method.getReturnType());
-//            System.out.println(method.getTypeParameters());
             if(method.getParameterTypes().length == 0) {
                 continue;
             }

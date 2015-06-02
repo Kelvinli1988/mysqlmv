@@ -37,25 +37,25 @@ public class RowEventProcessor implements Runnable {
     }
 
     private void runTask() throws SQLException {
-        RowsEventData data = rowEvent.getData();
-        TableMapEventData tMap = TableMapContext.getTableMap(data.getTableId());
+        RowsIEventData data = (RowsIEventData)rowEvent.getData();
+        TableMapIEventData tMap = TableMapContext.getTableMap(data.getTableId());
         schema = tMap.getDbName();
         table = tMap.getTableName();
         int ordinal = EtpDao.findPKOrdinal(schema, table);
-        List<RowsEventData.Row> rows = data.getRows();
-        if(data instanceof DeleteRowsEventData) {
+        List<RowsIEventData.Row> rows = data.getRows();
+        if(data instanceof DeleteRowsIEventData) {
             processDelete(ordinal);
-        } else if(data instanceof WriteRowsEventData) {
+        } else if(data instanceof WriteRowsIEventData) {
             processInsert(ordinal);
-        } else if(data instanceof UpdateRowsEventData) {
+        } else if(data instanceof UpdateRowsIEventData) {
             processUpdate(ordinal);
         }
     }
 
     private void processInsert(int idOrdinal) throws SQLException {
-        RowsEventData data = rowEvent.getData();
+        RowsIEventData data = (RowsIEventData)rowEvent.getData();
         Set<ToiValue> vValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
-        for(RowsEventData.Row row: data.getRows()) {
+        for(RowsIEventData.Row row: data.getRows()) {
             for(ToiValue toiValue : vValueList) {
                 Object idObj = row.getCells().get(idOrdinal - 1).getValue();
                 int id = 0;//Integer);
@@ -71,9 +71,9 @@ public class RowEventProcessor implements Runnable {
     }
 
     private void processDelete(int idOrdinal) throws SQLException {
-        RowsEventData data = rowEvent.getData();
+        RowsIEventData data = (RowsIEventData)rowEvent.getData();
         Set<ToiValue> vValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
-        for(RowsEventData.Row row: data.getRows()) {
+        for(RowsIEventData.Row row: data.getRows()) {
             for(ToiValue toiValue : vValueList) {
                 int id = (Integer)row.getCells().get(idOrdinal - 1).getValue();
                 int toiId = toiValue.getMviewToiId();
@@ -84,7 +84,7 @@ public class RowEventProcessor implements Runnable {
     }
 
     private void processUpdate(int idOrdinal) throws SQLException {
-        RowsEventData data = rowEvent.getData();
+        RowsIEventData data = (RowsIEventData)rowEvent.getData();
         Set<ToiValue> tValueList = ToiContext.getToiValue(new ToiEntry(schema, table));
         for(int i=0; i<data.getRows().size();) {
             int id = (Integer) data.getRows().get(i).getCells().get(idOrdinal - 1).getValue();

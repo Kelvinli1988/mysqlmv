@@ -1,7 +1,7 @@
 package org.mysqlmv.cd.logevent.parser.impl;
 
 import org.mysqlmv.cd.logevent.eventdef.data.ColumnType;
-import org.mysqlmv.cd.logevent.eventdef.data.TableMapEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.TableMapIEventData;
 import org.mysqlmv.cd.logevent.parser.EventDataParser;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 
@@ -10,10 +10,10 @@ import java.io.IOException;
 /**
  * Created by Kelvin Li on 11/17/2014 9:31 AM.
  */
-public class TableMapEventDataParser implements EventDataParser<TableMapEventData> {
+public class TableMapEventDataParser implements EventDataParser<TableMapIEventData> {
     @Override
-    public TableMapEventData parse(ByteArrayInputStream stream) throws IOException {
-        TableMapEventData data = new TableMapEventData();
+    public TableMapIEventData parse(ByteArrayInputStream stream) throws IOException {
+        TableMapIEventData data = new TableMapIEventData();
         data.setTableID(stream.readLong(6));
         stream.skip(2);
         data.setDbNameLength(stream.readInteger(1));

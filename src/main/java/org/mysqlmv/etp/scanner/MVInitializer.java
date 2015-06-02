@@ -11,7 +11,8 @@ import org.mysqlmv.etp.context.ToiContext;
 import org.mysqlmv.etp.context.ToiEntry;
 import org.mysqlmv.etp.context.ToiValue;
 import org.mysqlmv.etp.dao.EtpDao;
-import org.mysqlmv.etp.mv.MaterializedView;
+import org.mysqlmv.mvm.mv.MVContext;
+import org.mysqlmv.mvm.mv.MaterializedView;
 import org.mysqlmv.etp.mv.MviewSetupVisitor;
 import org.slf4j.Logger;
 

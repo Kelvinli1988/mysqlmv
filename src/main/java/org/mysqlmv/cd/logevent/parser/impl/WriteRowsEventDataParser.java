@@ -1,6 +1,6 @@
 package org.mysqlmv.cd.logevent.parser.impl;
 
-import org.mysqlmv.cd.logevent.eventdef.data.WriteRowsEventData;
+import org.mysqlmv.cd.logevent.eventdef.data.WriteRowsIEventData;
 import org.mysqlmv.common.io.ByteArrayInputStream;
 
 import java.io.IOException;
@@ -8,11 +8,11 @@ import java.io.IOException;
 /**
  * Created by Kelvin Li on 11/17/2014 1:13 PM.
  */
-public class WriteRowsEventDataParser extends AbstractRowsEventDataParser<WriteRowsEventData> {
+public class WriteRowsEventDataParser extends AbstractRowsEventDataParser<WriteRowsIEventData> {
 
     @Override
-    public WriteRowsEventData parse(ByteArrayInputStream input) throws IOException {
-        WriteRowsEventData data = new WriteRowsEventData();
+    public WriteRowsIEventData parse(ByteArrayInputStream input) throws IOException {
+        WriteRowsIEventData data = new WriteRowsIEventData();
         if(parseCommon(input, data)) {
             parseRows(input, data);
         }
