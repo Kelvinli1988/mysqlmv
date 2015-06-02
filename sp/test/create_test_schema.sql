@@ -11,3 +11,5 @@ create view test_log_view AS
 
 use mysqlmv;
 call create_mv('test', 'test_log_view', 1);
+
+call mysqlmv.create_mv('test', 'student_score', 1);

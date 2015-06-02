@@ -141,7 +141,7 @@ public class EtpDao {
 
             @Override
             public Object doInCallback(PreparedStatement pstmt) throws SQLException {
-                pstmt.setInt(1, mv.getId());
+                pstmt.setLong(1, mv.getId());
                 pstmt.execute();
                 return null;
             }

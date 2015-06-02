@@ -2,15 +2,18 @@ package org.mysqlmv.mvm;
 
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.util.JdbcConstants;
 import org.mysqlmv.common.conn.ConnectionManager;
 import org.mysqlmv.common.exception.CDCException;
-import org.mysqlmv.mvm.mv.BaseDeltaTable;
-import org.mysqlmv.mvm.mv.MVContext;
-import org.mysqlmv.mvm.mv.MaterializedView;
-import org.mysqlmv.mvm.mv.MviewMonitorVisitor;
+import org.mysqlmv.mvm.mv.*;
 import org.mysqlmv.mvm.sql.CreateTableSqlModifier;
 import org.slf4j.Logger;
 
@@ -93,6 +96,107 @@ public class MaterializedViewMonitor implements Runnable {
         visitor.setContext(context);
         visitor.visit((MySqlSelectQueryBlock) ((((SQLSelectStatement) stmtList.get(0)).getSelect()).getQuery()));
         return context.getDeltaTableList();
+    }
+
+    public void generateMVExpression(MySqlSelectQueryBlock stmt, MVContext context) {
+        generateSelectExpression(stmt, context);
+        generateFromExpression(stmt.getFrom(), context);
+    }
+
+    private long generateFromExpression(Object from, MVContext context) {
+        String sql = "insert into mview_expression(mview_id, type, table_owner, table_name, table_alias) values(?, 'from', ?, ?, ?)";
+        if(from instanceof SQLJoinTableSource) {
+            return generateJoinExpression((SQLJoinTableSource)from, context);
+        } else if(from instanceof SQLExprTableSource) {
+            SQLExprTableSource table = (SQLExprTableSource)from;
+            SQLPropertyExpr prop = (SQLPropertyExpr)table.getExpr();
+            String name = prop.getName();
+            SQLIdentifierExpr ownerExpr = (SQLIdentifierExpr)prop.getOwner();
+            String owner = ownerExpr.getName();
+            PreparedStatement pstmt = null;
+            ResultSet rs = null;
+            try{
+                pstmt = dbCon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                pstmt.setLong(1, context.getMview().getId());
+                pstmt.setString(2, owner);
+                pstmt.setString(3, name);
+                pstmt.setString(4, table.getAlias());
+                pstmt.executeUpdate();
+                rs = pstmt.getGeneratedKeys();
+                rs.next();
+                return rs.getLong(1);
+            } catch (SQLException e) {
+                logger.error("Error while finding uninitalized materialized view.", e);
+            } finally {
+                try {
+                    rs.close();
+                    pstmt.close();
+                } catch (Exception ignore) {
+                }
+            }
+        } else {
+            throw new RuntimeException("Generate from clause should not arrive here");
+        }
+        return 0L;
+    }
+
+    private long generateJoinExpression(SQLJoinTableSource join, MVContext context) {
+        long leftId = generateFromExpression(join.getLeft(), context);
+        long rightId = generateFromExpression(join.getRight(), context);
+        SQLBinaryOpExpr conditionExpr = (SQLBinaryOpExpr)join.getCondition();
+        SqlRewriteVisitor visitor = new SqlRewriteVisitor();
+        visitor.visit(conditionExpr);
+        String condition = visitor.toString();
+        long thisId = 0L;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String sql = "insert into mview_expression(mview_id, type, join_type, join_left, " +
+                "join_right, expression) values(?, 'join', ?, ?, ?, ?)";
+        try {
+            pstmt = dbCon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setLong(1, context.getMview().getId());
+            pstmt.setString(2, join.getJoinType().toString());
+            pstmt.setLong(3, leftId);
+            pstmt.setLong(4, rightId);
+            pstmt.setString(5, condition);
+            pstmt.executeUpdate();
+            rs = pstmt.getGeneratedKeys();
+            rs.next();
+            thisId = rs.getLong(1);
+        } catch (SQLException e) {
+            logger.error("Error while finding uninitalized materialized view.", e);
+        } finally {
+            try {
+                rs.close();
+                pstmt.close();
+            } catch (Exception ignore) {
+            }
+        }
+        return thisId;
+    }
+
+    private void generateSelectExpression(MySqlSelectQueryBlock stmt, MVContext context) {
+        List<SQLSelectItem> selectList = stmt.getSelectList();
+        if(selectList != null && selectList.size() > 0) {
+            String sql = "insert into mview_expression(type, mview_id, expression, expr_order) values('select', ?, ?, ?)";
+            PreparedStatement pstmt = null;
+            try {
+                pstmt = dbCon.prepareStatement(sql);
+                for(int seq=0; seq < selectList.size(); seq ++) {
+                    pstmt.setLong(1, context.getMview().getId());
+                    pstmt.setString(2, selectList.get(seq).getAlias());
+                    pstmt.setInt(3, seq);
+                    pstmt.executeUpdate();
+                }
+            } catch (SQLException e) {
+                logger.error("Error while finding uninitalized materialized view.", e);
+            } finally {
+                try {
+                    pstmt.close();
+                } catch (Exception ignore) {
+                }
+            }
+        }
     }
 
     public void setupDeltaTable(BaseDeltaTable delta) {

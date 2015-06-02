@@ -68,7 +68,7 @@ public class MVInitializer {
                 EtpDao.updateToiSetup(schema, table);
                 // Add toi setup into toi context
                 logger.info("Add table into TOIContext, schema:" + schema + ", table:" +table);
-                ToiContext.addToiEntry(new ToiEntry(schema, table), new ToiValue(DBUtil.getLastInsertedID(), mv.getId()));
+//                ToiContext.addToiEntry(new ToiEntry(schema, table), new ToiValue(DBUtil.getLastInsertedID(), mv.getId()));
             }
         }
     }

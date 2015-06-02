@@ -25,6 +25,6 @@ public class MviewSetupVisitor extends MviewMonitorVisitor {
         String schema = exprs[0].replace("`", "");
         String table = exprs[1].replace("`", "");
         String alias = from.getAlias() == null ? "" : from.getAlias();
-        EtpDao.addMviewToiDef(getContext().getMview().getId(), schema, table, alias);
+//        EtpDao.addMviewToiDef(getContext().getMview().getId(), schema, table, alias);
     }
 }

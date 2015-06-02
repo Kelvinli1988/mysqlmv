@@ -6,7 +6,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
  * Created by Kelvin Li on 11/21/2014 3:38 PM.
  */
 public class MaterializedView {
-    private int id;
+    private long id;
 
     private String name;
 
@@ -48,11 +48,11 @@ public class MaterializedView {
         this.defObj = defObj;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 }

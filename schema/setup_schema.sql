@@ -42,16 +42,20 @@ CREATE TABLE `mview_delta_mapping`(
 
 DROP TABLE IF EXISTS `mview_expression`;
 CREATE TABLE `mview_expression` (
-  `mview_expression_id` int(11) NOT NULL AUTO_INCREMENT,
-  `mview_id` int(11),
-  `mview_expr_type` varchar(128), /*enum('GROUP','SUM','AVG','COUNT','MIN','MAX','WHERE','PRIMARY','KEY','COLUMN','COUNT_DISTINCT','STDDEV_POP','VAR_POP','STDDEV_SAMP','VAR_SAMP','BIT_AND','BIT_OR','BIT_XOR', 'PERCENTILE','UNIQUE') DEFAULT 'GROUP',*/
-  `mview_expression` varchar(10000),
-  `mview_expr_alias` varchar(100) default NULL,
-  `mview_expr_order` int(11) default '999',
-  `create_datetime` datetime default null ,
-  PRIMARY KEY  (`mview_expression_id`),
-  UNIQUE KEY `mview_id` (`mview_id`,`mview_expr_alias`),
-  KEY `mview_id_2` (`mview_id`, `mview_expr_order`)
+  `id` SERIAL PRIMARY KEY,
+  `mview_id` bigint UNSIGNED,
+  `type` varchar(128), /* select, from, where, join, group by*/
+  `expression` varchar(1024),
+  # for from clause.
+  `table_owner` varchar(1024),
+  `table_name` varchar(1024),
+  `table_alias` varchar(1024),
+  # for join
+  `join_type` varchar(128), /* INNER JOIN, LEFT JOIN, RIGHT JOIN, OUTER JOIN*/
+  `join_left` bigint UNSIGNED,
+  `join_right` bigint UNSIGNED,
+  `expr_order` int(11) default '999',
+  `last_update_timestamp` timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /**
