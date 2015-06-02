@@ -19,18 +19,33 @@ public class CreateTableSqlModifier implements SqlModifier {
 
     private static List<SQLTableElement> date_qty_columns;
 
+    private SqlModifier previsouModifier;
+
+
     static {
-        String masterSql = "CREATE TABLE `date_quatity_table` (`mysqlmv_dt` long, `mysqlmv_qty` int)";
+        String masterSql = "CREATE TABLE `date_quatity_table` (`mysqlmv_dt` bigint, `mysqlmv_qty` int)";
         List<SQLStatement> stmtList1 = SQLUtils.parseStatements(masterSql, JdbcConstants.MYSQL);
         date_qty_columns = ((MySqlCreateTableStatement)stmtList1.get(0)).getTableElementList();
     }
 
+    public CreateTableSqlModifier() {
+
+    }
+
+    public CreateTableSqlModifier(SqlModifier previsouModifier) {
+        this.previsouModifier = previsouModifier;
+    }
+
     @Override
-    public void modify(String sql) {
+    public CreateTableSqlModifier modify(String sql) {
+        if(previsouModifier != null) {
+            sql = previsouModifier.modify(sql).getResult();
+        }
         List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, JdbcConstants.MYSQL);
         createStmt = (MySqlCreateTableStatement)stmtList.get(0);
         remoteUniqueConstraint();
         addDateQtyColumn();
+        return this;
     }
 
     private void addDateQtyColumn() {

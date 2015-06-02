@@ -6,7 +6,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
  * Created by Kelvin Li on 6/2/2015.
  */
 public interface SqlModifier {
-    public void modify(String sql);
+    public SqlModifier modify(String sql);
 
     public String getResult();
 

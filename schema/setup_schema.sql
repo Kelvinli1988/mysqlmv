@@ -2,7 +2,7 @@ create database mysqlmv;
 use mysqlmv;
 DROP TABLE IF EXISTS `mview`;
 CREATE TABLE `mview` (
-  `mview_id` int(11) NOT NULL AUTO_INCREMENT,
+  `mview_id` SERIAL,
   `mview_name` varchar(50) default NULL,
   `mview_schema` varchar(50) default NULL,
   `mview_setup_finished` tinyint default 0,
@@ -21,6 +21,24 @@ CREATE TABLE `mview` (
   PRIMARY KEY  (`mview_id`),
   UNIQUE KEY `mview_name` (`mview_name`,`mview_schema`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `mview_table_marker`;
+CREATE TABLE `mview_table_marker`(
+  `id` SERIAL PRIMARY KEY,
+  `table_schema` varchar(50),
+  `table_name` varchar(50),
+  `last_update_timestamp` timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  UNIQUE KEY `mview_name` (`table_schema`,`table_name`)
+)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `mview_delta_mapping`;
+CREATE TABLE `mview_delta_mapping`(
+  `id` SERIAL PRIMARY KEY,
+  `mview_id` BIGINT UNSIGNED,
+  `table_marker_id` BIGINT UNSIGNED,
+  FOREIGN KEY(`mview_id`) REFERENCES `mview`(`mview_id`),
+  FOREIGN KEY(`table_marker_id`) REFERENCES `mview_table_marker`(`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `mview_expression`;
 CREATE TABLE `mview_expression` (

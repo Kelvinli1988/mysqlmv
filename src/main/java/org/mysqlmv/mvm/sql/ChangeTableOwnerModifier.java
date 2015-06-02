@@ -22,6 +22,8 @@ public class ChangeTableOwnerModifier implements SqlModifier{
 
     private String newOwner;
 
+    private SqlModifier previsouModifier;
+
     public ChangeTableOwnerModifier() {
         newOwner = DEFAULT_OWNER;
     }
@@ -30,12 +32,20 @@ public class ChangeTableOwnerModifier implements SqlModifier{
         this.newOwner = newOwner;
     }
 
+    public ChangeTableOwnerModifier(SqlModifier previsouModifier) {
+        this.previsouModifier = previsouModifier;
+    }
+
     @Override
-    public void modify(String sql) {
+    public ChangeTableOwnerModifier modify(String sql) {
+        if(previsouModifier != null) {
+            sql = previsouModifier.modify(sql).getResult();
+        }
         List<SQLStatement> stmtList1 = SQLUtils.parseStatements(sql, JdbcConstants.MYSQL);
         createStmt = (MySqlCreateTableStatement)stmtList1.get(0);
         SQLExprTableSource tableSource = createStmt.getTableSource();
         ((SQLIdentifierExpr)((SQLPropertyExpr)tableSource.getExpr()).getOwner()).setName(newOwner);
+        return this;
     }
 
     public String getOwner() {

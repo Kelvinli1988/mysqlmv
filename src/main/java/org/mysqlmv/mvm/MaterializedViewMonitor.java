@@ -11,12 +11,10 @@ import org.mysqlmv.mvm.mv.BaseDeltaTable;
 import org.mysqlmv.mvm.mv.MVContext;
 import org.mysqlmv.mvm.mv.MaterializedView;
 import org.mysqlmv.mvm.mv.MviewMonitorVisitor;
+import org.mysqlmv.mvm.sql.CreateTableSqlModifier;
 import org.slf4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +26,7 @@ import java.util.List;
  * 5. update the materialized view status.
  * 6. issue mark command.
  * -- another loop.
- *
+ * <p/>
  * Created by Kelvin Li on 6/1/2015.
  */
 public class MaterializedViewMonitor implements Runnable {
@@ -43,7 +41,7 @@ public class MaterializedViewMonitor implements Runnable {
 
     @Override
     public void run() {
-        while(true) {
+        while (true) {
 
         }
     }
@@ -57,7 +55,7 @@ public class MaterializedViewMonitor implements Runnable {
             pstmt = dbCon.prepareStatement(sql);
             pstmt.execute();
             rs = pstmt.getResultSet();
-            while(rs.next()) {
+            while (rs.next()) {
                 MaterializedView mv = new MaterializedView();
                 mv.setName(rs.getString("mview_name"));
                 mv.setOriginalSchema(rs.getString("mview_schema"));
@@ -98,10 +96,72 @@ public class MaterializedViewMonitor implements Runnable {
     }
 
     public void setupDeltaTable(BaseDeltaTable delta) {
-
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            dbCon.createStatement();
+            stmt = dbCon.createStatement();
+            String deltaCountSql = "select count(1)  from information_schema.tables where table_schema='mysqlmv' and table_name = '" + delta.getTable() + "'";
+            stmt.execute(deltaCountSql);
+            rs = stmt.getResultSet();
+            rs.next();
+            int deltaCount = rs.getInt(1);
+            rs.close();
+            if (deltaCount != 0) {
+                return;
+            }
+            String sql = "show create table " + delta.getSchema() + "." + delta.getTable();
+            stmt.execute(sql);
+            rs = stmt.getResultSet();
+            String tblDef = null;
+            while (rs.next()) {
+                tblDef = rs.getString("Create Table");
+            }
+            rs.close();
+            if (tblDef != null) {
+                CreateTableSqlModifier createModifier = new CreateTableSqlModifier();
+                String newTable = createModifier.modify(tblDef).getResult();
+                stmt.execute(newTable);
+                issueTableMarker(delta);
+            }
+        } catch (SQLException e) {
+            logger.error("Error while finding uninitalized materialized view.", e);
+        } finally {
+            try {
+                stmt.close();
+                rs.close();
+            } catch (Exception ignore) {
+            }
+        }
     }
 
     private void issueTableMarker(BaseDeltaTable delta) {
-
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            String markerSql = "insert into mview_table_marker(table_schema, table_name) values(?, ?)";
+            pstmt = dbCon.prepareStatement(markerSql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, delta.getSchema());
+            pstmt.setString(2, delta.getTable());
+            pstmt.executeUpdate();
+            rs = pstmt.getGeneratedKeys();
+            rs.next();
+            long markerId = rs.getLong(1);
+            rs.close();
+            pstmt.close();
+            String markerMviewSql = "insert into mview_delta_mapping(mview_id, table_marker_id) values(? ,?)";
+            pstmt = dbCon.prepareStatement(markerMviewSql);
+            pstmt.setLong(1, delta.getMvID());
+            pstmt.setLong(2, markerId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("Error while finding uninitalized materialized view.", e);
+        } finally {
+            try {
+                rs.close();
+                pstmt.close();
+            } catch (Exception ignore) {
+            }
+        }
     }
 }
