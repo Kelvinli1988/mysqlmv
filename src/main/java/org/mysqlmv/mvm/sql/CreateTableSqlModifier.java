@@ -6,7 +6,7 @@ import com.alibaba.druid.sql.ast.statement.SQLTableElement;
 import com.alibaba.druid.sql.ast.statement.SQLUnique;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlCreateTableStatement;
 import com.alibaba.druid.util.JdbcConstants;
-import org.mysqlmv.mvm.mv.CreateTableRewriteVisitor;
+import org.mysqlmv.mvm.mv.SqlRewriteVisitor;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class CreateTableSqlModifier implements SqlModifier {
 
     @Override
     public String toString() {
-        CreateTableRewriteVisitor visitor = new CreateTableRewriteVisitor();
+        SqlRewriteVisitor visitor = new SqlRewriteVisitor();
         visitor.visit(createStmt);
         return visitor.toString();
     }
