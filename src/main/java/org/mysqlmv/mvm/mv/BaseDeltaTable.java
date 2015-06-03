@@ -13,6 +13,8 @@ public class BaseDeltaTable {
 
     private String alias;
 
+    private long markerId;
+
     public String getSchema() {
         return schema;
     }
@@ -27,6 +29,14 @@ public class BaseDeltaTable {
 
     public String getAlias() {
         return alias;
+    }
+
+    public long getMarkerId() {
+        return markerId;
+    }
+
+    public void setMarkerId(long markerId) {
+        this.markerId = markerId;
     }
 
     public BaseDeltaTable(long mvID, String schema, String table, String alias) {

@@ -4,6 +4,7 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableElement;
 import com.alibaba.druid.sql.ast.statement.SQLUnique;
+import com.alibaba.druid.sql.dialect.mysql.ast.MysqlForeignKey;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlCreateTableStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.mysqlmv.mvm.mv.SqlRewriteVisitor;
@@ -56,7 +57,8 @@ public class CreateTableSqlModifier implements SqlModifier {
     private void remoteUniqueConstraint() {
         List<SQLTableElement> tableElements = createStmt.getTableElementList();
         for(int i =0; i<tableElements.size(); ) {
-            if(tableElements.get(i) instanceof SQLUnique) {
+            if(tableElements.get(i) instanceof SQLUnique
+                    || tableElements.get(i) instanceof MysqlForeignKey) {
                 tableElements.remove(i);
             } else {
                 i ++;
