@@ -118,9 +118,14 @@ public class MaterializedViewMonitor implements Runnable {
                 setupDeltaTran.setupDeltaTable(delta);
                 markerTran.issueTableMarker(delta);
             }
+            updateMVState(mv, MaterializedView.State.SETUP_FINISH);
             globalTran.commit();
-        } catch (TransactionException ex) {
+        } catch (Exception ex) {
             globalTran.rollback();
+            try {
+                updateMVState(mv, MaterializedView.State.SETUP_ERROR);
+            } catch (SQLException ignore) {
+            }
         }
     }
 
@@ -141,5 +146,21 @@ public class MaterializedViewMonitor implements Runnable {
         visitor.setContext(context);
         visitor.visit(selectStmt);
         return context;
+    }
+
+    public void updateMVState(MaterializedView mv, MaterializedView.State state) throws SQLException {
+        String sql = "update mview set mview_status = ? where mview_id = ?";
+        PreparedStatement pstmt = null;
+        try{
+            pstmt = dbCon.prepareStatement(sql);
+            pstmt.setInt(1, state.getStateValue());
+            pstmt.setLong(2, mv.getId());
+            pstmt.executeUpdate();
+        }  finally {
+            try {
+                pstmt.close();
+            } catch (Exception ignore) {
+            }
+        }
     }
 }

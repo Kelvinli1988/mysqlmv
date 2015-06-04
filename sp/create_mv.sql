@@ -22,10 +22,10 @@ BEGIN
   -- 2. create mview
   -- 2.1 check refresh_type
   START TRANSACTION;
-    insert into `mview`(  mview_id,       mview_schema,   mview_name,         mview_setup_finished,
-                          mview_enabled,  is_complete,    mview_definition,   create_datetime)
-    values(               null,           schema_name,    view_name,        0,
-                          0,              refresh_mode,   view_def,         now());
+    insert into `mview`(  mview_id,       mview_schema,   mview_name,         mview_status,
+                          refresh_type,    mview_definition,   create_datetime)
+    values(               null,           schema_name,    view_name,          0,
+                          refresh_mode,   view_def,       now());
   COMMIT;
 END//
 

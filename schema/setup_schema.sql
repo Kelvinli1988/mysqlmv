@@ -2,15 +2,15 @@ create database mysqlmv;
 use mysqlmv;
 DROP TABLE IF EXISTS `mview`;
 CREATE TABLE `mview` (
-  `mview_id` SERIAL,
+  `mview_id` SERIAL PRIMARY KEY,
   `mview_name` varchar(50) default NULL,
   `mview_schema` varchar(50) default NULL,
-  `mview_setup_finished` tinyint default 0,
-  `mview_enabled` tinyint(1) default 0,
+  `mview_status` tinyint default 0,
   `mview_last_refresh` datetime default NULL,
   /*`mview_refresh_period` int(11) default '86400',*/
-  `is_complete` tinyint default false,
-  `mview_engine` enum('MyISAM','InnoDB') default 'InnoDB',
+  `refresh_type` enum('Increamental', 'complete') default 'refresh_type',
+  # Only InnoDB currently, will extend later.
+  `mview_engine` enum('InnoDB') default 'InnoDB',
   `mview_definition` varchar(20000),
 #   `incremental_hwm` bigint(20) default NULL,
 #   `refreshed_to_uow_id` bigint(20) default NULL,
@@ -18,7 +18,6 @@ CREATE TABLE `mview` (
 #   `created_at_signal_id` bigint null,
   `create_datetime` datetime default null,
   `last_update_timestamp` timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`mview_id`),
   UNIQUE KEY `mview_name` (`mview_name`,`mview_schema`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
