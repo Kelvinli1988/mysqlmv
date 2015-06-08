@@ -8,7 +8,7 @@ CREATE TABLE `mview` (
   `mview_status` tinyint default 0,
   `mview_last_refresh` datetime default NULL,
   /*`mview_refresh_period` int(11) default '86400',*/
-  `refresh_type` enum('Increamental', 'complete') default 'refresh_type',
+  `refresh_type` enum('Increamental', 'complete') default 'Increamental',
   # Only InnoDB currently, will extend later.
   `mview_engine` enum('InnoDB') default 'InnoDB',
   `mview_definition` varchar(20000),
@@ -55,6 +55,23 @@ CREATE TABLE `mview_expression` (
   `join_right` bigint UNSIGNED,
   `expr_order` int(11) default '999',
   `last_update_timestamp` timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `parameter_group`;
+CREATE TABLE `parameter_group`(
+  `id` SERIAL PRIMARY KEY,
+  `create_datetime` datetime default null
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `parameter_list`;
+CREATE TABLE `parameter_list` (
+  `id` SERIAL PRIMARY KEY,
+  `group_id` bigint UNSIGNED,
+  `table_owner` varchar(512),
+  `table_name` varchar(512),
+  `from` bigint,
+  `to` bigint,
+  `create_datetime` timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /**

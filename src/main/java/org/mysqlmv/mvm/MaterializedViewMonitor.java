@@ -66,7 +66,7 @@ public class MaterializedViewMonitor implements Runnable {
 
     public List<MaterializedView> findUnintializedMV() throws CDCException {
         List<MaterializedView> uninitializedMVList = new ArrayList<MaterializedView>();
-        String sql = "select * from mview where mview_setup_finished = 0 and mview_name is not null";
+        String sql = "select * from mview where mview_status = 0 and mview_name is not null";
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {

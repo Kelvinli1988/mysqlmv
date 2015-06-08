@@ -36,6 +36,10 @@ public class GenerateMVExpressionTransaction implements ITransaction {
 
     MySqlSelectQueryBlock selectStmt;
 
+    private int join_order = 0;
+
+    private int table_order = 0;
+
     public GenerateMVExpressionTransaction(Connection conn, MVContext context) {
         this.dbCon = conn;
         this.context = context;
@@ -82,7 +86,7 @@ public class GenerateMVExpressionTransaction implements ITransaction {
     }
 
     private long generateFromExpression(Object from, MVContext context) throws TransactionException {
-        String sql = "insert into mview_expression(mview_id, type, table_owner, table_name, table_alias) values(?, 'from', ?, ?, ?)";
+        String sql = "insert into mview_expression(mview_id, type, table_owner, table_name, table_alias, expr_order) values(?, 'from', ?, ?, ?, ?)";
         if(from instanceof SQLJoinTableSource) {
             return generateJoinExpression((SQLJoinTableSource)from, context);
         } else if(from instanceof SQLExprTableSource) {
@@ -99,6 +103,7 @@ public class GenerateMVExpressionTransaction implements ITransaction {
                 pstmt.setString(2, owner);
                 pstmt.setString(3, name);
                 pstmt.setString(4, table.getAlias());
+                pstmt.setInt(5, ++ table_order);
                 pstmt.executeUpdate();
                 rs = pstmt.getGeneratedKeys();
                 rs.next();
@@ -129,7 +134,7 @@ public class GenerateMVExpressionTransaction implements ITransaction {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         String sql = "insert into mview_expression(mview_id, type, join_type, join_left, " +
-                "join_right, expression) values(?, 'join', ?, ?, ?, ?)";
+                "join_right, expression, expr_order) values(?, 'join', ?, ?, ?, ?, ?)";
         try {
             pstmt = dbCon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             pstmt.setLong(1, context.getMview().getId());
@@ -137,6 +142,7 @@ public class GenerateMVExpressionTransaction implements ITransaction {
             pstmt.setLong(3, leftId);
             pstmt.setLong(4, rightId);
             pstmt.setString(5, condition);
+            pstmt.setInt(6, ++join_order);
             pstmt.executeUpdate();
             rs = pstmt.getGeneratedKeys();
             rs.next();
