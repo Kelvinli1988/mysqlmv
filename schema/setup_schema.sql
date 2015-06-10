@@ -69,8 +69,9 @@ CREATE TABLE `parameter_list` (
   `group_id` bigint UNSIGNED,
   `table_owner` varchar(512),
   `table_name` varchar(512),
-  `from` bigint,
-  `to` bigint,
+  `from` bigint default(-1),
+  `to` bigint default(-1),
+  `table_order` int,
   `create_datetime` timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

@@ -9,7 +9,7 @@ CREATE DEFINER=mysqlmv@localhost PROCEDURE mysqlmv.mv_monitor(
 BEGIN
   -- check mv_status.
   DECLARE mv_status int;
-  DECLARE drop_view_sql, create_table_sql varchar(4000);
+  DECLARE drop_view_sql, create_table_sql, create_delta_table_sql varchar(4000);
   set mv_status = get_mv_status(mv_id);
   if mv_status = -2 THEN
     -- the setup in java side is done.
@@ -23,8 +23,9 @@ BEGIN
   -- DO INIT_LOAD.
   -- drop original view;
   select concat('drop view ', mview_schema, '.', mview_name),
-         concat('create table ', mview_schema, '.', mview_name, 'as ', mview_definition)
-  into drop_view_sql, create_table_sql
+         concat('create table ', mview_schema, '.', mview_name, 'as ', mview_definition),
+         concat('create table ', mview_name,  '_delta like ', mview_schema, '.', mview_name)
+  into drop_view_sql, create_table_sql, create_delta_table_sql
   from mview
   where mview_id = mv_id;
   SELECT drop_view_sql, create_table_sql;
@@ -32,11 +33,18 @@ BEGIN
   PREPARE drop_view_stmt FROM drop_view_sql;
   EXECUTE drop_view_stmt;
   DEALLOCATE PREPARE drop_view_stmt;
-  PREPARE create_table_sql FROM drop_view_sql;
-  EXECUTE create_table_sql;
-  DEALLOCATE PREPARE create_table_sql;
-  # update the status of the materialized view.
+  PREPARE create_table_stmt FROM create_table_sql;
+  EXECUTE create_table_stmt;
+  DEALLOCATE PREPARE create_table_stmt;
+  PREPARE create_delta_table_stmt FROM create_delta_table_sql;
+  EXECUTE create_delta_table_stmt;
+  DEALLOCATE PREPARE create_delta_table_stmt;
+
+# create delta table.
+
+# update the status of the materialized view.
   call update_mv_status(mv_id, 3);
+
 
 END//
 
